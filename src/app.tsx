@@ -15,7 +15,7 @@ function App() {
   }
 
   return (
-    <main className="container">
+    <main className="dark text-foreground min-h-screen bg-background">
       <h1>Welcome to Tauri + React</h1>
 
       <div className="row">
@@ -47,7 +47,7 @@ function App() {
         />
         <button type="submit">Greet</button>
       </form>
-      <Button color="default">ca fonctionne</Button>
+      <Button color="primary">ca fonctionne</Button>
       <p>{greetMessage}</p>
     </main>
   );
