@@ -2,12 +2,12 @@ import "./App.css";
 import { DeviceCard } from "./device-card";
 import React from "react";
 
-interface DeviceGrid {
+interface DeviceGridProperties {
   rows: number;
   columns: number;
 }
 
-export const DeviceGrid: React.FC<DeviceGrid> = ({ rows, columns }) => {
+export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   const total = rows * columns;
   const cells = [];
   for (let index = 0; index < total; index++) {
@@ -23,8 +23,10 @@ export const DeviceGrid: React.FC<DeviceGrid> = ({ rows, columns }) => {
     );
   }
   return (
-    <div className="grid grid-cols-5 gap-4 flex-1 min-h-0 p-4 dark:bg-background">
+    <div
+      className={`grid gap-4 p-4 flex-1 min-h-0 dark:bg-background grid-cols-${columns}`}
+    >
       {cells}
     </div>
   );
-};
+}

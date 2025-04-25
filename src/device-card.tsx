@@ -9,7 +9,7 @@ import {
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
 
-interface DeviceCard {
+interface DeviceCardProperties {
   id: number;
   name: string;
   status: "Running" | "Idle";
@@ -17,13 +17,13 @@ interface DeviceCard {
   totalTests: number;
 }
 
-export const DeviceCard: React.FC<DeviceCard> = ({
+export function DeviceCard({
   id,
   name,
   status,
   completedTests,
   totalTests,
-}) => {
+}: DeviceCardProperties) {
   const progressPercentage = (completedTests / totalTests) * 100;
 
   return (
@@ -86,4 +86,4 @@ export const DeviceCard: React.FC<DeviceCard> = ({
       </CardFooter>
     </Card>
   );
-};
+}
