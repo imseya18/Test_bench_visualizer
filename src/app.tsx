@@ -32,6 +32,7 @@ class MyFirstGrid extends React.Component {
         cols={5}
         rowHeight={120}
         width={1200}
+        verticalCompact={true}
       >
         {layout.map((item) => (
           <div key={item.i} className="bg-amber-500">
