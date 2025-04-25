@@ -1,9 +1,10 @@
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
-html {
+html,
+body,
+#root {
   color-scheme: dark;
-}
-body {
+  height: 100%;
   margin: 0;
 }
