@@ -6,12 +6,17 @@ import {
   Badge,
   Tooltip,
   Divider,
+  Button,
+  Dropdown,
+  DropdownMenu,
+  DropdownTrigger,
+  DropdownItem,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
-
+import { TYPE_OF_CARDS } from "../utils";
 interface DeviceCardProperties {
   id: number;
-  name: string;
+  name: string | undefined;
   status: "Running" | "Idle";
   completedTests: number;
   totalTests: number;
@@ -26,7 +31,7 @@ export function DeviceCard({
 }: DeviceCardProperties) {
   const progressPercentage = (completedTests / totalTests) * 100;
 
-  return (
+  return name ? (
     <Card
       isPressable
       className="  flex flex-col h-full border-gray-500 border-1"
@@ -84,6 +89,28 @@ export function DeviceCard({
           <Icon icon="lucide:chevron-right" className="text-default-400" />
         </Tooltip>
       </CardFooter>
+    </Card>
+  ) : (
+    <Card
+      isPressable={false}
+      className="  flex flex-col h-full border-gray-500 border-1 justify-center items-center"
+    >
+      <Dropdown>
+        <DropdownTrigger>
+          <Button
+            variant="flat"
+            color="primary"
+            startContent={<Icon icon="lucide:plus" />}
+          >
+            Ajouter un composant
+          </Button>
+        </DropdownTrigger>
+        <DropdownMenu aria-label="Types de composants">
+          {TYPE_OF_CARDS.map((type, index) => (
+            <DropdownItem key={index}>{type}</DropdownItem>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
     </Card>
   );
 }

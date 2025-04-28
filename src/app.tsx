@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 
 import { Sidebar } from "./side-bar";
-import { DeviceGrid } from "./device-grid";
+import { DeviceGrid } from "./component/device-grid";
 
 function App() {
   return (

@@ -1,4 +1,4 @@
-import "./App.css";
+import "../App.css";
 import { DeviceCard } from "./device-card";
 import React from "react";
 
@@ -15,7 +15,7 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
       <DeviceCard
         key={index}
         id={index}
-        name="test"
+        name=""
         status="Running"
         completedTests={15}
         totalTests={25}
@@ -24,7 +24,7 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   }
   return (
     <div
-      className={`grid gap-4 p-4 flex-1 min-h-0 dark:bg-background grid-cols-${columns}`}
+      className={`grid gap-4 p-4 flex-1 min-h-0 dark:bg-background grid-cols-5`}
     >
       {cells}
     </div>
