@@ -18,7 +18,6 @@ export default {
         },
         // Couleurs personnalisées pour le mode sombre
         dark: {
-          background: "#71717A",
           secondary: "#A855F7",
         },
       },

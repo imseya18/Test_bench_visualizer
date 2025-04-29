@@ -13,35 +13,37 @@ import {
   DropdownItem,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
-import { TYPE_OF_CARDS } from "../utils";
-interface DeviceCardProperties {
-  id: number;
-  name: string | undefined;
-  status: "Running" | "Idle";
-  completedTests: number;
-  totalTests: number;
-}
+import { CARD_TYPE_ARRAY } from "../utils/global-variable";
+import { CardPropreties } from "../utils/board-store";
+// interface DeviceCardProperties {
+//   id: number;
+//   name: string | undefined;
+//   status: "Running" | "Idle";
+//   completedTests: number;
+//   totalTests: number;
+// }
 
 export function DeviceCard({
   id,
-  name,
+  type,
   status,
   completedTests,
   totalTests,
-}: DeviceCardProperties) {
-  const progressPercentage = (completedTests / totalTests) * 100;
+}: CardPropreties) {
+  const progressPercentage =
+    completedTests && totalTests ? (completedTests / totalTests) * 100 : 0;
 
-  return name ? (
+  return type ? (
     <Card
       isPressable
       className="  flex flex-col h-full border-gray-500 border-1"
-      onPress={() => console.log(`Clicked on ${name}`)}
+      onPress={() => console.log(`Clicked on ${type}`)}
     >
       <CardBody className="p-3 gap-2">
         <div className="flex justify-between items-center">
-          <h3 className="text-medium font-semibold">{name}</h3>
+          <h3 className="text-medium font-semibold">{type}</h3>
           <Badge
-            color={status === "Running" ? "success" : "default"}
+            color={status === "RUNNING" ? "success" : "default"}
             variant="flat"
             size="sm"
           >
@@ -61,7 +63,7 @@ export function DeviceCard({
         <div className="w-full bg-default-100 rounded-full h-2 mt-1">
           <div
             className={`h-2 rounded-full ${
-              status === "Running" ? "bg-success" : "bg-default-400"
+              status === "RUNNING" ? "bg-success" : "bg-default-400"
             }`}
             style={{ width: `${progressPercentage}%` }}
           ></div>
@@ -106,7 +108,7 @@ export function DeviceCard({
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="Types de composants">
-          {TYPE_OF_CARDS.map((type, index) => (
+          {CARD_TYPE_ARRAY.map((type, index) => (
             <DropdownItem key={index}>{type}</DropdownItem>
           ))}
         </DropdownMenu>

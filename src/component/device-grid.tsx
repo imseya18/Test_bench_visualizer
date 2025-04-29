@@ -1,6 +1,9 @@
 import "../App.css";
 import { DeviceCard } from "./device-card";
 import React from "react";
+import { CardPropreties } from "../utils/board-store";
+import { useBoardStore } from "../utils/board-store";
+import { nanoid } from "nanoid";
 
 interface DeviceGridProperties {
   rows: number;
@@ -10,17 +13,12 @@ interface DeviceGridProperties {
 export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   const total = rows * columns;
   const cells = [];
+  const initCard = useBoardStore((state) => state.initCard);
+
   for (let index = 0; index < total; index++) {
-    cells.push(
-      <DeviceCard
-        key={index}
-        id={index}
-        name=""
-        status="Running"
-        completedTests={15}
-        totalTests={25}
-      ></DeviceCard>
-    );
+    const initialCard: CardPropreties = { id: nanoid() };
+    initCard(initialCard.id, initialCard);
+    cells.push(<DeviceCard key={index} id={index.toString()}></DeviceCard>);
   }
   return (
     <div
