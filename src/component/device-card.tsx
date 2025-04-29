@@ -15,6 +15,8 @@ import {
 import { Icon } from "@iconify/react";
 import { CARD_TYPE_ARRAY } from "../utils/global-variable";
 import { CardPropreties } from "../utils/board-store";
+import { useBoardStore } from "../utils/board-store";
+import { CardType } from "../utils/global-variable";
 // interface DeviceCardProperties {
 //   id: number;
 //   name: string | undefined;
@@ -23,15 +25,21 @@ import { CardPropreties } from "../utils/board-store";
 //   totalTests: number;
 // }
 
-export function DeviceCard({
-  id,
-  type,
-  status,
-  completedTests,
-  totalTests,
-}: CardPropreties) {
+export function DeviceCard({ id }: CardPropreties) {
+  const useGetCard = useBoardStore((state) => state.getCard);
+  const useUpdateCard = useBoardStore((state) => state.updateCard);
+  const card = useGetCard(id);
+  if (!card) return;
+
+  const { type, status, completedTests, totalTests } = card;
+
   const progressPercentage =
     completedTests && totalTests ? (completedTests / totalTests) * 100 : 0;
+
+  const updateCard = (patch: Partial<CardPropreties>) => {
+    console.log(type);
+    useUpdateCard(id, patch);
+  };
 
   return type ? (
     <Card
@@ -107,9 +115,12 @@ export function DeviceCard({
             Ajouter un composant
           </Button>
         </DropdownTrigger>
-        <DropdownMenu aria-label="Types de composants">
-          {CARD_TYPE_ARRAY.map((type, index) => (
-            <DropdownItem key={index}>{type}</DropdownItem>
+        <DropdownMenu
+          aria-label="Types de composants"
+          onAction={(key) => updateCard({ type: key as CardType })}
+        >
+          {CARD_TYPE_ARRAY.map((type) => (
+            <DropdownItem key={type}>{type}</DropdownItem>
           ))}
         </DropdownMenu>
       </Dropdown>
