@@ -5,7 +5,7 @@
   "identifier": "com.banc_test_mvp.app",
   "build": {
     "beforeDevCommand": "pnpm dev",
-    "devUrl": "http://10.69.4.50:1420",
+    "devUrl": "http://10.69.4.50:1421",
     "beforeBuildCommand": "pnpm build",
     "frontendDist": "../dist"
   },
