@@ -17,13 +17,6 @@ import { CARD_TYPE_ARRAY } from "../utils/global-variable";
 import { CardPropreties } from "../utils/board-store";
 import { useBoardStore } from "../utils/board-store";
 import { CardType } from "../utils/global-variable";
-// interface DeviceCardProperties {
-//   id: number;
-//   name: string | undefined;
-//   status: "Running" | "Idle";
-//   completedTests: number;
-//   totalTests: number;
-// }
 
 export function DeviceCard({ id }: CardPropreties) {
   const useGetCard = useBoardStore((state) => state.getCard);
@@ -37,7 +30,6 @@ export function DeviceCard({ id }: CardPropreties) {
     completedTests && totalTests ? (completedTests / totalTests) * 100 : 0;
 
   const updateCard = (patch: Partial<CardPropreties>) => {
-    console.log(type);
     useUpdateCard(id, patch);
   };
 

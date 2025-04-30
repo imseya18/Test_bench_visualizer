@@ -23,6 +23,12 @@ importers:
       '@tauri-apps/plugin-opener':
         specifier: ^2
         version: 2.2.6
+      '@tauri-apps/plugin-store':
+        specifier: ~2
+        version: 2.2.0
+      '@tauri-apps/plugin-stronghold':
+        specifier: ~2
+        version: 2.2.0
       eslint-plugin-unicorn:
         specifier: ^58.0.0
         version: 58.0.0(eslint@9.25.1(jiti@2.4.2))
@@ -1898,6 +1904,12 @@ packages:
 
   '@tauri-apps/plugin-opener@2.2.6':
     resolution: {integrity: sha512-bSdkuP71ZQRepPOn8BOEdBKYJQvl6+jb160QtJX/i2H9BF6ZySY/kYljh76N2Ne5fJMQRge7rlKoStYQY5Jq1w==}
+
+  '@tauri-apps/plugin-store@2.2.0':
+    resolution: {integrity: sha512-hJTRtuJis4w5fW1dkcgftsYxKXK0+DbAqurZ3CURHG5WkAyyZgbxpeYctw12bbzF9ZbZREXZklPq8mocCC3Sgg==}
+
+  '@tauri-apps/plugin-stronghold@2.2.0':
+    resolution: {integrity: sha512-N0SxfcNifvlXQ3ZHGxx9ecWNZGXtYJ6PBL0Ac8bGs90I2e2a0+JJcsAnMxQA5XQcIQfpYIXPgf0hNCliz828fw==}
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -6005,6 +6017,14 @@ snapshots:
       '@tauri-apps/cli-win32-x64-msvc': 2.5.0
 
   '@tauri-apps/plugin-opener@2.2.6':
+    dependencies:
+      '@tauri-apps/api': 2.5.0
+
+  '@tauri-apps/plugin-store@2.2.0':
+    dependencies:
+      '@tauri-apps/api': 2.5.0
+
+  '@tauri-apps/plugin-stronghold@2.2.0':
     dependencies:
       '@tauri-apps/api': 2.5.0
 

@@ -1,8 +1,14 @@
 import React from "react";
 import { Button, Tooltip, Divider } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { Dispatch, SetStateAction } from "react";
+import { MenuKey } from "../app";
 
-export const Sidebar: React.FC = () => {
+type SidebarProperties = {
+  setMenu: Dispatch<SetStateAction<MenuKey>>;
+};
+
+export function Sidebar({ setMenu }: SidebarProperties) {
   return (
     <div className="h-screen w-16 bg-content2 flex flex-col items-center py-4 border-r border-content3">
       <Tooltip content="Dashboard" placement="right">
@@ -12,6 +18,7 @@ export const Sidebar: React.FC = () => {
           color="primary"
           className="mb-4"
           aria-label="Dashboard"
+          onPress={() => setMenu("Home")}
         >
           <Icon icon="lucide:layout-dashboard" width={24} />
         </Button>
@@ -24,6 +31,7 @@ export const Sidebar: React.FC = () => {
           color="primary"
           className="mb-4"
           aria-label="Test Bench"
+          onPress={() => setMenu("Board")}
         >
           <Icon icon="lucide:cpu" width={24} />
         </Button>
@@ -46,6 +54,7 @@ export const Sidebar: React.FC = () => {
           variant="light"
           className="mb-4"
           aria-label="Settings"
+          onPress={() => setMenu("Settings")}
         >
           <Icon icon="lucide:settings" width={24} />
         </Button>
@@ -86,4 +95,4 @@ export const Sidebar: React.FC = () => {
       </div>
     </div>
   );
-};
+}
