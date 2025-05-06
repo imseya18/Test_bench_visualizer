@@ -13,6 +13,10 @@ const getApi = async () => {
   console.log(Api);
 };
 
+const getCall = async () => {
+  const Result = await invoke("test_api_call");
+  console.log(Result);
+};
 export function Settings() {
   return (
     <div>
@@ -31,6 +35,9 @@ export function Settings() {
       </Form>
       <Button color="primary" onPress={getApi}>
         Get
+      </Button>
+      <Button color="primary" onPress={getCall}>
+        test API CALL
       </Button>
     </div>
   );

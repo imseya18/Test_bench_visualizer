@@ -8,8 +8,11 @@ export const CARD_TYPE_ARRAY = [
   "qemuarm-welma",
   "raspberrypi4-64-welma",
   "sm2s-imx8plus-mbep5",
+  "sm2s-imx93-mbep5",
   "stm32mp15-disco-welma",
   "tungsten-700-smarc-welma",
+  "raspberrypi4-64",
+  "",
 ] as const;
 
 export const CARD_STATUS = ["RUNNING", "IDLE", "OFF"] as const;
