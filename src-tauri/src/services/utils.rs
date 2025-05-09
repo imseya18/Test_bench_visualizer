@@ -1,14 +1,10 @@
-use crate::models::enums::{JobType, get_job_type};
 use crate::models::api_struct::Job;
+use crate::models::enums::JobType;
 
-pub fn extract_card_and_job_type(job: &Job) -> Option<(String, JobType)>  {
+pub fn extract_card_and_job_type(job: &Job) -> Option<(String, JobType)> {
     let name_split: Vec<&str> = job.name.split(":").collect();
-    let Some(card_type) = name_split.get(1) else {
-        return None;
-    };
-    let Some(job_type_str) = name_split.get(0) else {
-        return None;
-    };
-    let job_type = get_job_type(job_type_str);
+    let card_type= name_split.get(1)?;
+    let job_type_str = name_split.first()?;
+    let job_type = job_type_str.parse().unwrap();
     Some((card_type.to_string(), job_type))
 }

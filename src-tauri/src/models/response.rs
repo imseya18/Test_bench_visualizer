@@ -1,11 +1,11 @@
+use crate::models::api_struct::{Job, Pipeline};
+use crate::models::enums::JobType;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
-use crate::models::enums::JobType;
-use crate::models::api_struct::{Job, Pipeline};
 
-// !todo use an hashmap with enum cardType, to get more flexibility if type of card need to be add. 
+// !todo use an hashmap with enum cardType, to get more flexibility if type of card need to be add.
 // Need to manually modify if new type of card added
-#[derive(Debug, Deserialize,Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct ByCardsResponse {
     #[serde(rename = "de-next-rap8-x86")]
     de_next_rap8_x86: HashMap<u64, PipelineJobsResponse>,
@@ -36,7 +36,13 @@ pub struct ByCardsResponse {
 }
 
 impl ByCardsResponse {
-    pub fn insert_job(&mut self, card_type: &str, job_type: JobType, pipeline: &Pipeline, job: Job) {
+    pub fn insert_job(
+        &mut self,
+        card_type: &str,
+        job_type: JobType,
+        pipeline: &Pipeline,
+        job: Job,
+    ) {
         // Need to manually modify if new type of card added
         let card_hash_map = match card_type {
             "de-next-rap8-x86" => &mut self.de_next_rap8_x86,
@@ -53,22 +59,27 @@ impl ByCardsResponse {
             "raspberrypi4-64" => &mut self.raspberrypi4_64,
             other => {
                 self.unknown_card_name.insert(other.to_string());
-                &mut self.unknown},
+                &mut self.unknown
+            }
         };
 
         /*Create the pipelineStruct if the key is not present, that's why i have to pass the reference
         to the pipeline struct at everycall*/
-        let pipeline = card_hash_map
-            .entry(pipeline.id)
-            .or_insert_with(|| PipelineJobsResponse::new(pipeline.id, pipeline.status.clone(), pipeline.project_id, pipeline.created_at.clone(), pipeline.updated_at.clone()));
+        let pipeline = card_hash_map.entry(pipeline.id).or_insert_with(|| {
+            PipelineJobsResponse::new(
+                pipeline.id,
+                pipeline.status.clone(),
+                pipeline.project_id,
+                pipeline.created_at.clone(),
+                pipeline.updated_at.clone(),
+            )
+        });
 
         pipeline.push_job(job_type, job);
     }
 }
 
-
-
-#[derive(Debug, Deserialize,Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 struct PipelineJobsResponse {
     id: u64,
     status: String,

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize,Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Pipeline {
     pub id: u64,
     pub status: String,
@@ -9,7 +9,7 @@ pub struct Pipeline {
     pub updated_at: String,
 }
 
-#[derive(Debug, Deserialize, Serialize,Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Job {
     id: u64,
     pub name: String,
