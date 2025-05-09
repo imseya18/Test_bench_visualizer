@@ -55,7 +55,8 @@ async fn test_api_call(state: tauri::State<'_, RwLock<AppState>>) -> Result<ByCa
     // }).await.map_err(|e| e.to_string())?;
 
     let client = gitlab::GitlabBuilder::new("gitlab.com", token).build_async().await.map_err(|e|e.to_string())?;
-    let pipelines = get_project_pipelines(&ProjectId::Ci, &client).await.map_err(|e| e.to_string())?;
+    //todo Add Number of days variable calls.
+    let pipelines = get_project_pipelines(&ProjectId::Ci, &client, 7).await.map_err(|e| e.to_string())?;
     let result = build_front_response(pipelines, &client).await;
     match result {
         Ok(result) => Ok(result),

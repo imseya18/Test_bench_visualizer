@@ -3,8 +3,9 @@ use crate::models::api_struct::{Job, Pipeline};
 use crate::models::enums::ProjectId;
 use crate::models::response::ByCardsResponse;
 use gitlab::api::projects::pipelines::{PipelineJobs, Pipelines};
-use gitlab::api::{Query,AsyncQuery};
-use gitlab::{Gitlab,AsyncGitlab};
+use gitlab::api::{AsyncQuery, paged, Pagination};
+use gitlab::AsyncGitlab;
+use chrono::{DateTime, Days, Utc};
 
 // pub fn get_pipelines_jobs_routine(
 //     project_id: ProjectId,
@@ -25,12 +26,13 @@ use gitlab::{Gitlab,AsyncGitlab};
 pub async fn get_project_pipelines(
     project_id: &ProjectId,
     client: &AsyncGitlab,
+    since_day: u64,
 ) -> Result<Vec<Pipeline>, Box<dyn std::error::Error>> {
     let endpoint = Pipelines::builder()
         .project(project_id.to_string())
+        .updated_after(Utc::now().checked_sub_days(Days::new(since_day)).unwrap())
         .build()?;
-    let pipelines: Vec<Pipeline> = endpoint.query_async(client).await?;
-
+    let pipelines: Vec<Pipeline> = paged(endpoint, Pagination::All).query_async(client).await?;
     Ok(pipelines)
 }
 
@@ -43,7 +45,7 @@ pub async fn get_pipeline_jobs(
         .project(project_id.to_string())
         .pipeline(pipelines_id)
         .build()?;
-    let jobs: Vec<Job> = endpoint.query_async(client).await?;
+    let jobs: Vec<Job> = paged(endpoint, Pagination::All).query_async(client).await?;
     Ok(jobs)
 }
 
