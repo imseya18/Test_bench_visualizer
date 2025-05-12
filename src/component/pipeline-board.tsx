@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Card,
   CardBody,
@@ -10,6 +10,26 @@ import {
   Tooltip,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useBoardStore } from "../utils/board-store";
+//Wrapper needed to path component's props to our navigation
+export function PipelineDetailsWrapper() {
+  const { state } = useLocation() as {
+    state: { deviceId: number; deviceName: string; isOpen: boolean };
+  };
+  const navigate = useNavigate();
+
+  const onClose = () => navigate(-1);
+
+  return (
+    <PipelineDetails
+      deviceId={state.deviceId}
+      deviceName={state.deviceName}
+      isOpen={state.isOpen}
+      onClose={onClose}
+    />
+  );
+}
 
 interface Job {
   id: string;
@@ -41,7 +61,13 @@ export function PipelineDetails({
   isOpen,
   onClose,
 }: PipelineDetailsProps) {
-  // Mock pipeline data
+  const useGetCardsPipeline = useBoardStore((state) => state.getCardsPipeline);
+  const pipeline = useGetCardsPipeline(deviceName);
+
+  useEffect(() => {
+    console.log(pipeline);
+  }, [pipeline]);
+  //Mock pipeline data
   const [pipelines] = React.useState<Pipeline[]>(() => {
     const jobTypes: ("build" | "test" | "deploy" | "validate")[] = [
       "build",
@@ -107,7 +133,7 @@ export function PipelineDetails({
     return groups;
   };
 
-  return (
+  return pipelines ? (
     <div className="fixed inset-0 bg-content1 z-50 overflow-auto">
       <div className="p-6">
         {/* Header */}
@@ -281,5 +307,7 @@ export function PipelineDetails({
         </div>
       </div>
     </div>
+  ) : (
+    <></>
   );
 }

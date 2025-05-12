@@ -17,11 +17,25 @@ import { CARD_TYPE_ARRAY } from "../utils/global-variable";
 import { CardPropreties } from "../utils/board-store";
 import { useBoardStore } from "../utils/board-store";
 import { CardType } from "../utils/global-variable";
+import { MemoryRouter, Routes, Route, useNavigate } from "react-router-dom";
+
+const openPipelineDetails = (deviceId: string, deviceName: string) => {
+  const navigate = useNavigate();
+
+  navigate("/pipelines", {
+    state: {
+      deviceId,
+      deviceName,
+      isOpen: true,
+    },
+  });
+};
 
 export function DeviceCard({ id }: CardPropreties) {
   const useGetCard = useBoardStore((state) => state.getCard);
   const useUpdateCard = useBoardStore((state) => state.updateCard);
   const card = useGetCard(id);
+  const navigate = useNavigate();
   if (!card) return;
 
   const { type, status, completedTests, totalTests } = card;
@@ -31,6 +45,16 @@ export function DeviceCard({ id }: CardPropreties) {
 
   const updateCard = (patch: Partial<CardPropreties>) => {
     useUpdateCard(id, patch);
+  };
+
+  const openPipelineDetails = (deviceId: string, deviceName: string) => {
+    navigate("/pipelines", {
+      state: {
+        deviceId,
+        deviceName,
+        isOpen: true,
+      },
+    });
   };
 
   return type ? (
@@ -67,7 +91,10 @@ export function DeviceCard({ id }: CardPropreties) {
 
         <div className="mt-3 grid grid-cols-2 gap-2">
           <Tooltip content="Pipelines Data">
-            <div className="bg-content2 rounded-md p-2 flex items-center justify-center">
+            <div
+              className="bg-content2 rounded-md p-2 flex items-center justify-center"
+              onClick={() => openPipelineDetails(id, type)}
+            >
               <Icon icon="lucide:bar-chart-2" className="text-default-400" />
             </div>
           </Tooltip>

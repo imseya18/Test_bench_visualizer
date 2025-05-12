@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { CardType, CardStatus } from "./global-variable";
 import { ByCardsResponse } from "../bindings/ByCardsResponse";
 import { invoke } from "@tauri-apps/api/core";
+import { card } from "@heroui/react";
+import { PipelineJobsResponse } from "../bindings/PipelineJobsResponse";
 export type CardPropreties = {
   id: string;
   type?: CardType;
@@ -22,6 +24,7 @@ type GitLabSlice = {
   isLoading: boolean;
   error: string | null;
   fetchGitLabData: () => Promise<void>;
+  getCardsPipeline(cardType: string): PipelineJobsResponse[];
 };
 
 export const useBoardStore = create<CardSlice & GitLabSlice>((set, get) => ({
@@ -49,13 +52,27 @@ export const useBoardStore = create<CardSlice & GitLabSlice>((set, get) => ({
   fetchGitLabData: async () => {
     set({ isLoading: true, error: null });
     try {
+      console.log("start api call");
       const result = await invoke<ByCardsResponse>("test_api_call");
       set({ gitLabData: result });
     } catch (err: any) {
+      console.error(err);
       set({ error: err.message });
     } finally {
       set({ isLoading: false });
       console.log(get().gitLabData);
     }
+  },
+
+  getCardsPipeline: (cardType): PipelineJobsResponse[] => {
+    const data = get().gitLabData;
+    if (!data) {
+      throw "No API data";
+    }
+    const pipelines = data[cardType];
+    if (!data) {
+      throw "No pipelines for this card";
+    }
+    return Object.values(pipelines);
   },
 }));
