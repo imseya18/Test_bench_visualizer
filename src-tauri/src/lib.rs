@@ -1,4 +1,4 @@
-use gitlab::{api::retry::Client, Gitlab};
+
 use std::sync::RwLock;
 use tauri::path::BaseDirectory;
 use tauri::Manager;
@@ -46,13 +46,6 @@ async fn test_api_call(state: tauri::State<'_, RwLock<AppState>>) -> Result<ByCa
         let token_guard = state.read().unwrap();
         token_guard.gitlab_token.clone()
     };
-
-    // let result = tokio::task::spawn_blocking(move || -> Result<ByCardsResponse, String> {
-    //     let client = Gitlab::new("gitlab.com", token).unwrap();
-    //     let pipelines = get_project_pipelines(&ProjectId::Ci, &client).map_err(|e| e.to_string())?;
-    //     let result = build_front_response(pipelines, &client);
-    //     Ok(result)
-    // }).await.map_err(|e| e.to_string())?;
 
     let client = gitlab::GitlabBuilder::new("gitlab.com", token).build_async().await.map_err(|e|e.to_string())?;
     //todo Add Number of days variable calls.

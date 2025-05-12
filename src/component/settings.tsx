@@ -1,7 +1,7 @@
 import React from "react";
 import { Input, Form, Button } from "@heroui/react";
 import { invoke } from "@tauri-apps/api/core";
-
+import { ByCardsResponse } from "../bindings/ByCardsResponse";
 const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
   event.preventDefault();
   const data = Object.fromEntries(new FormData(event.currentTarget));
@@ -14,8 +14,11 @@ const getApi = async () => {
 };
 
 const getCall = async () => {
-  const Result = await invoke("test_api_call");
+  console.log("Api call started");
+  const Result = await invoke<ByCardsResponse>("test_api_call");
+
   console.log(Result);
+  // console.log(Result);
 };
 export function Settings() {
   return (

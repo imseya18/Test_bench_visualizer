@@ -2,13 +2,10 @@ import React from "react";
 import { Button, Tooltip, Divider } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { Dispatch, SetStateAction } from "react";
-import { MenuKey } from "../app";
+import { useNavigate } from "react-router-dom";
 
-type SidebarProperties = {
-  setMenu: Dispatch<SetStateAction<MenuKey>>;
-};
-
-export function Sidebar({ setMenu }: SidebarProperties) {
+export function Sidebar() {
+  let navigate = useNavigate();
   return (
     <div className="h-screen w-16 bg-content2 flex flex-col items-center py-4 border-r border-content3">
       <Tooltip content="Dashboard" placement="right">
@@ -18,7 +15,7 @@ export function Sidebar({ setMenu }: SidebarProperties) {
           color="primary"
           className="mb-4"
           aria-label="Dashboard"
-          onPress={() => setMenu("Home")}
+          onPress={() => navigate("/pipelines")}
         >
           <Icon icon="lucide:layout-dashboard" width={24} />
         </Button>
@@ -31,7 +28,7 @@ export function Sidebar({ setMenu }: SidebarProperties) {
           color="primary"
           className="mb-4"
           aria-label="Test Bench"
-          onPress={() => setMenu("Board")}
+          onPress={() => navigate("/board")}
         >
           <Icon icon="lucide:cpu" width={24} />
         </Button>
@@ -54,7 +51,7 @@ export function Sidebar({ setMenu }: SidebarProperties) {
           variant="light"
           className="mb-4"
           aria-label="Settings"
-          onPress={() => setMenu("Settings")}
+          onPress={() => navigate("Settings")}
         >
           <Icon icon="lucide:settings" width={24} />
         </Button>

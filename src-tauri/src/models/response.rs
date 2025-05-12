@@ -2,35 +2,50 @@ use crate::models::api_struct::{Job, Pipeline};
 use crate::models::enums::JobType;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
+use ts_rs::TS;
 
 // !todo use an hashmap with enum cardType, to get more flexibility if type of card need to be add.
 // Need to manually modify if new type of card added
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, TS)]
+#[ts(export)]
 pub struct ByCardsResponse {
     #[serde(rename = "de-next-rap8-x86")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     de_next_rap8_x86: HashMap<u64, PipelineJobsResponse>,
     #[serde(rename = "hbjc386f951t-x86")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     hbjc386f951t_x86: HashMap<u64, PipelineJobsResponse>,
     #[serde(rename = "imx8mm-cgt-sx8m-rev-a")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     imx8mm_cgt_sx8m_rev_a: HashMap<u64, PipelineJobsResponse>,
     #[serde(rename = "k393x-mini-x86")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     k393x_mini_x86: HashMap<u64, PipelineJobsResponse>,
     #[serde(rename = "maaxboard-8ulp-welma")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     maaxboard_8ulp_welma: HashMap<u64, PipelineJobsResponse>,
     #[serde(rename = "qemuarm-welma")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     qemuarm_welma: HashMap<u64, PipelineJobsResponse>,
     #[serde(rename = "raspberrypi4-64-welma")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     raspberrypi4_64_welma: HashMap<u64, PipelineJobsResponse>,
     #[serde(rename = "sm2s-imx8plus-mbep5")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     sm2s_imx8plus_mbep5: HashMap<u64, PipelineJobsResponse>,
     #[serde(rename = "stm32mp15-disco-welma")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     stm32mp15_disco_welma: HashMap<u64, PipelineJobsResponse>,
     #[serde(rename = "tungsten-700-smarc-welma")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     tungsten_700_smarc_welma: HashMap<u64, PipelineJobsResponse>,
     #[serde(rename = "sm2s-imx93-mbep5")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     sm2s_imx93_mbep5: HashMap<u64, PipelineJobsResponse>,
     #[serde(rename = "raspberrypi4-64")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     raspberrypi4_64: HashMap<u64, PipelineJobsResponse>,
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
     unknown: HashMap<u64, PipelineJobsResponse>,
     unknown_card_name: HashSet<String>,
 }
@@ -79,7 +94,8 @@ impl ByCardsResponse {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, TS)]
+#[ts(export)]
 struct PipelineJobsResponse {
     id: u64,
     status: String,

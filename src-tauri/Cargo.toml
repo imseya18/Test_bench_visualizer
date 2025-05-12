@@ -29,4 +29,5 @@ tauri-plugin-store = "2"
 gitlab = "0.1711.0"
 tokio = "1.45.0"
 chrono = "0.4.41"
+ts-rs = "10.1.0"
 

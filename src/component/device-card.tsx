@@ -34,11 +34,7 @@ export function DeviceCard({ id }: CardPropreties) {
   };
 
   return type ? (
-    <Card
-      isPressable
-      className="  flex flex-col h-full border-gray-500 border-1"
-      onPress={() => console.log(`Clicked on ${type}`)}
-    >
+    <Card className="  flex flex-col h-full border-gray-500 border-1">
       <CardBody className="p-3 gap-2">
         <div className="flex justify-between items-center">
           <h3 className="text-medium font-semibold">{type}</h3>
@@ -70,7 +66,7 @@ export function DeviceCard({ id }: CardPropreties) {
         </div>
 
         <div className="mt-3 grid grid-cols-2 gap-2">
-          <Tooltip content="Future: Performance Metrics">
+          <Tooltip content="Pipelines Data">
             <div className="bg-content2 rounded-md p-2 flex items-center justify-center">
               <Icon icon="lucide:bar-chart-2" className="text-default-400" />
             </div>

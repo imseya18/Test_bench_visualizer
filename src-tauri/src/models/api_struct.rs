@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, TS)]
+#[ts(export)]
 pub struct Pipeline {
     pub id: u64,
     pub status: String,
@@ -9,7 +11,8 @@ pub struct Pipeline {
     pub updated_at: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, TS)]
+#[ts(export)]
 pub struct Job {
     id: u64,
     pub name: String,
