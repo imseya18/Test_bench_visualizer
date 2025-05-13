@@ -15,7 +15,6 @@ impl FromStr for JobType {
     // As our from_str implementation doesn't return an error in any case we can use the Infallible enum
     type Err = Infallible;
 
-
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(match s {
             "build" => JobType::Build,
@@ -26,7 +25,6 @@ impl FromStr for JobType {
         })
     }
 }
-
 
 #[derive(Debug)]
 pub enum ProjectId {

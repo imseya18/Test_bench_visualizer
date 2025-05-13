@@ -25,5 +25,5 @@ pub struct Job {
 #[derive(Debug, Deserialize, Serialize, Clone, TS)]
 #[ts(export)]
 pub struct Commit {
-    pub title: String
+    pub title: String,
 }

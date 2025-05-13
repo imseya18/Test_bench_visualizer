@@ -2,7 +2,6 @@ use crate::models::api_struct::{Job, Pipeline};
 use crate::models::enums::JobType;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
-use std::os::unix::raw::time_t;
 use ts_rs::TS;
 
 // !todo use an hashmap with enum cardType, to get more flexibility if type of card need to be add.

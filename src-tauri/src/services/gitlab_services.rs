@@ -2,10 +2,10 @@ use super::utils::extract_card_and_job_type;
 use crate::models::api_struct::{Job, Pipeline};
 use crate::models::enums::ProjectId;
 use crate::models::response::ByCardsResponse;
-use gitlab::api::projects::pipelines::{PipelineJobs, Pipelines};
-use gitlab::api::{AsyncQuery, paged, Pagination,};
-use gitlab::AsyncGitlab;
 use chrono::{Days, Utc};
+use gitlab::api::projects::pipelines::{PipelineJobs, Pipelines};
+use gitlab::api::{paged, AsyncQuery, Pagination};
+use gitlab::AsyncGitlab;
 
 // pub fn get_pipelines_jobs_routine(
 //     project_id: ProjectId,
@@ -49,7 +49,10 @@ pub async fn get_pipeline_jobs(
     Ok(jobs)
 }
 
-pub async fn build_front_response(pipelines: Vec<Pipeline>, client: &AsyncGitlab) -> Result<ByCardsResponse, Box<dyn std::error::Error>> {
+pub async fn build_front_response(
+    pipelines: Vec<Pipeline>,
+    client: &AsyncGitlab,
+) -> Result<ByCardsResponse, Box<dyn std::error::Error>> {
     let mut response = ByCardsResponse::default();
 
     for pipeline in pipelines {

@@ -1,4 +1,3 @@
-
 use std::sync::RwLock;
 use tauri::path::BaseDirectory;
 use tauri::Manager;
@@ -39,21 +38,27 @@ fn get_api_key(state: tauri::State<'_, RwLock<AppState>>) -> Result<String, Stri
 }
 
 #[tauri::command(rename_all = "snake_case")]
-async fn test_api_call(state: tauri::State<'_, RwLock<AppState>>) -> Result<ByCardsResponse, String> {
-    
+async fn test_api_call(
+    state: tauri::State<'_, RwLock<AppState>>,
+) -> Result<ByCardsResponse, String> {
     /* I use a closur to drop the RwLock before the .await cause Rwlock isn't send*/
     let token: String = {
         let token_guard = state.read().unwrap();
         token_guard.gitlab_token.clone()
     };
 
-    let client = gitlab::GitlabBuilder::new("gitlab.com", token).build_async().await.map_err(|e|e.to_string())?;
+    let client = gitlab::GitlabBuilder::new("gitlab.com", token)
+        .build_async()
+        .await
+        .map_err(|e| e.to_string())?;
     //todo Add Number of days variable calls.
-    let pipelines = get_project_pipelines(&ProjectId::Ci, &client, 7).await.map_err(|e| e.to_string())?;
+    let pipelines = get_project_pipelines(&ProjectId::Ci, &client, 7)
+        .await
+        .map_err(|e| e.to_string())?;
     let result = build_front_response(pipelines, &client).await;
     match result {
         Ok(result) => Ok(result),
-        Err(e) => Err(e.to_string())
+        Err(e) => Err(e.to_string()),
     }
 }
 
