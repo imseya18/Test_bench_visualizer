@@ -2,6 +2,7 @@ use crate::models::api_struct::{Job, Pipeline};
 use crate::models::enums::JobType;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
+use std::os::unix::raw::time_t;
 use ts_rs::TS;
 
 // !todo use an hashmap with enum cardType, to get more flexibility if type of card need to be add.
@@ -83,6 +84,7 @@ impl ByCardsResponse {
         let pipeline = card_hash_map.entry(pipeline.id).or_insert_with(|| {
             PipelineJobsResponse::new(
                 pipeline.id,
+                job.commit.title.clone(),
                 pipeline.status.clone(),
                 pipeline.project_id,
                 pipeline.created_at.clone(),
@@ -98,6 +100,7 @@ impl ByCardsResponse {
 #[ts(export)]
 struct PipelineJobsResponse {
     id: u64,
+    title: String,
     status: String,
     project_id: u64,
     created_at: String,
@@ -112,6 +115,7 @@ struct PipelineJobsResponse {
 impl PipelineJobsResponse {
     pub fn new(
         id: u64,
+        title: String,
         status: String,
         project_id: u64,
         created_at: String,
@@ -119,6 +123,7 @@ impl PipelineJobsResponse {
     ) -> Self {
         PipelineJobsResponse {
             id,
+            title,
             status,
             project_id,
             created_at,

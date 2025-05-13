@@ -3,9 +3,9 @@ use crate::models::api_struct::{Job, Pipeline};
 use crate::models::enums::ProjectId;
 use crate::models::response::ByCardsResponse;
 use gitlab::api::projects::pipelines::{PipelineJobs, Pipelines};
-use gitlab::api::{AsyncQuery, paged, Pagination};
+use gitlab::api::{AsyncQuery, paged, Pagination,};
 use gitlab::AsyncGitlab;
-use chrono::{DateTime, Days, Utc};
+use chrono::{Days, Utc};
 
 // pub fn get_pipelines_jobs_routine(
 //     project_id: ProjectId,

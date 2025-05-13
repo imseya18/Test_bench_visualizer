@@ -14,9 +14,16 @@ pub struct Pipeline {
 #[derive(Debug, Deserialize, Serialize, Clone, TS)]
 #[ts(export)]
 pub struct Job {
+    pub commit: Commit,
     id: u64,
     pub name: String,
-    tag_list: Vec<String>,
     stage: String,
     status: String,
+    tag_list: Vec<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, TS)]
+#[ts(export)]
+pub struct Commit {
+    pub title: String
 }

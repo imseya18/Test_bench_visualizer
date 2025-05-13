@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Card,
   CardBody,
   Badge,
   Button,
-  Divider,
   Accordion,
   AccordionItem,
   Tooltip,
@@ -40,6 +39,7 @@ interface PipelineDetailsProps {
 }
 
 type JobKeys = "build" | "cve" | "test" | "test_offline" | "unknown";
+type JobStatus = "running" | "completed" | "failed" | "pending" | "success";
 const jobKeys: JobKeys[] = ["build", "cve", "test", "test_offline", "unknown"];
 
 export function PipelineDetails({
@@ -51,10 +51,27 @@ export function PipelineDetails({
   const pipelinesRecord = useBoardStore(
     (state) => state.gitLabData[deviceName]
   );
-  const pipelines = Object.values(pipelinesRecord);
+
+  const isLoading = useBoardStore((state) => state.isLoading);
+  const pipelines = useMemo(
+    () =>
+      isLoading
+        ? [] // pendant le chargement, un tableau vide
+        : Object.values(pipelinesRecord),
+    [isLoading, pipelinesRecord]
+  );
+
   useEffect(() => {
     console.log(pipelines);
   }, [pipelines]);
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center">
+        <span>Chargement en cours…</span>
+      </div>
+    );
+  }
 
   //Mock pipeline data
   //   const [pipelines] = React.useState<Pipeline[]>(() => {
@@ -87,7 +104,7 @@ export function PipelineDetails({
   //     }));
   //   });
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: JobStatus) => {
     const colors = {
       running: "primary",
       completed: "success",
@@ -155,78 +172,90 @@ export function PipelineDetails({
             selectionMode="multiple"
             className="gap-4 flex flex-col w-full"
           >
-            {pipelines.map((pipeline) => (
-              <AccordionItem
-                key={pipeline.id}
-                aria-label={pipeline.id.toString()}
-                title={
-                  <div className="flex items-center justify-between py-2 w-full">
-                    <div className="flex items-center gap-4">
-                      <Icon
-                        icon="lucide:git-branch"
-                        className={`text-${getStatusColor(pipeline.status)}`}
-                        size={20}
-                      />
-                      <div>
-                        <div className="font-semibold">
-                          {pipeline.id.toString()}
+            {pipelines.map((pipeline) => {
+              const successfulJobLen = getSuccesfulJobSize(pipeline);
+              const totalJobLen = getJobSize(pipeline);
+              const isPipelineSuccess =
+                successfulJobLen === totalJobLen ? true : false;
+              return (
+                <AccordionItem
+                  key={pipeline.id}
+                  aria-label={pipeline.id.toString()}
+                  title={
+                    <div className="flex items-center justify-between py-2 w-full">
+                      <div className="flex items-center gap-4">
+                        <Icon
+                          icon="lucide:git-branch"
+                          className={
+                            isPipelineSuccess
+                              ? "text-success"
+                              : `text-${getStatusColor(
+                                  pipeline.status as JobStatus
+                                )}`
+                          }
+                          size={20}
+                        />
+                        <div>
+                          <div className="font-semibold">{pipeline.title}</div>
+                          <div className="text-small text-default-500">
+                            Started {pipeline.created_at} at{" "}
+                            {pipeline.created_at}
+                          </div>
                         </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <Badge
+                          color={
+                            isPipelineSuccess
+                              ? ("success" as JobStatus)
+                              : getStatusColor(pipeline.status as JobStatus)
+                          }
+                          variant="solid"
+                        >
+                          {isPipelineSuccess
+                            ? "Success"
+                            : pipeline.status.charAt(0).toUpperCase() +
+                              pipeline.status.slice(1)}
+                        </Badge>
                         <div className="text-small text-default-500">
-                          Started {pipeline.created_at} at {pipeline.created_at}
+                          {successfulJobLen}/{totalJobLen} jobs
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <Badge
-                        color={getStatusColor(pipeline.status)}
-                        variant="flat"
-                      >
-                        {pipeline.status.charAt(0).toUpperCase() +
-                          pipeline.status.slice(1)}
-                      </Badge>
-                      <div className="text-small text-default-500">
-                        {getSuccesfulJobSize(pipeline)}/{getJobSize(pipeline)}{" "}
-                        jobs
-                      </div>
-                    </div>
-                  </div>
-                }
-                className="border border-content3 rounded-large"
-              >
-                <div className="px-4 pb-4">
-                  <Card className="border border-content3">
-                    <CardBody>
-                      <div className="grid grid-cols-4 gap-6">
-                        {jobKeys.map((type) => (
-                          <div key={type} className="space-y-4">
-                            <div className="flex items-center gap-2 mb-3">
-                              <Icon
-                                icon={
-                                  type === "build"
-                                    ? "lucide:box"
-                                    : type === "test"
-                                    ? "lucide:flask"
-                                    : type === "unknown"
-                                    ? "lucide:rocket"
-                                    : "lucide:check-circle"
-                                }
-                                className="text-primary"
-                              />
-                              <h3 className="text-medium font-semibold capitalize">
-                                {type}
-                              </h3>
-                            </div>
-                            {pipeline[type].map((job) => (
-                              <div
-                                key={job.id}
-                                className="flex items-center justify-between p-3 rounded-medium bg-content2"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <Badge
-                                    color={getStatusColor(job.status)}
-                                    variant="flat"
-                                    size="sm"
-                                  >
+                  }
+                  className="border border-content3 rounded-large"
+                >
+                  <div className="px-4 pb-4">
+                    <Card className="border border-content3">
+                      <CardBody>
+                        <div className="grid grid-cols-4 gap-6">
+                          {jobKeys.map((type) => (
+                            <div key={type} className="space-y-4">
+                              <div className="flex items-center gap-2 mb-3">
+                                <Icon
+                                  icon={
+                                    type === "build"
+                                      ? "lucide:box"
+                                      : type === "test"
+                                      ? "lucide:flask-conical"
+                                      : type === "test_offline"
+                                      ? "lucide:flask-conical-off"
+                                      : type === "unknown"
+                                      ? "lucide:rocket"
+                                      : "lucide:check-circle"
+                                  }
+                                  className="text-primary"
+                                />
+                                <h3 className="text-medium font-semibold capitalize">
+                                  {type}
+                                </h3>
+                              </div>
+                              {pipeline[type].map((job) => (
+                                <div
+                                  key={job.id}
+                                  className="flex items-center justify-between p-3 rounded-medium bg-content2"
+                                >
+                                  <div className="flex items-center gap-3">
                                     <Icon
                                       icon={
                                         job.status === "running"
@@ -240,53 +269,59 @@ export function PipelineDetails({
                                       className={
                                         job.status === "running"
                                           ? "animate-spin"
-                                          : ""
+                                          : `text-${getStatusColor(
+                                              job.status as JobStatus
+                                            )}`
                                       }
+                                      height="1.5em"
                                     />
-                                  </Badge>
-                                  <div>
-                                    <div className="font-medium">
-                                      {job.name}
+                                    <div>
+                                      <div className="font-medium">
+                                        {job.name}
+                                      </div>
+                                      {/* <div className="text-tiny text-default-500">
+                                        Duration: {formatDuration(job.duration)}
+                                      </div> */}
                                     </div>
-                                    {/* <div className="text-tiny text-default-500">
-                                      Duration: {formatDuration(job.duration)}
-                                    </div> */}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Tooltip content="View Logs">
+                                      <Button
+                                        isIconOnly
+                                        variant="light"
+                                        size="sm"
+                                      >
+                                        <Icon
+                                          icon="lucide:file-text"
+                                          size={18}
+                                        />
+                                      </Button>
+                                    </Tooltip>
+                                    <Tooltip content="Retry Job">
+                                      <Button
+                                        isIconOnly
+                                        variant="light"
+                                        size="sm"
+                                        isDisabled={job.status === "running"}
+                                      >
+                                        <Icon
+                                          icon="lucide:refresh-cw"
+                                          size={18}
+                                        />
+                                      </Button>
+                                    </Tooltip>
                                   </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <Tooltip content="View Logs">
-                                    <Button
-                                      isIconOnly
-                                      variant="light"
-                                      size="sm"
-                                    >
-                                      <Icon icon="lucide:file-text" size={18} />
-                                    </Button>
-                                  </Tooltip>
-                                  <Tooltip content="Retry Job">
-                                    <Button
-                                      isIconOnly
-                                      variant="light"
-                                      size="sm"
-                                      isDisabled={job.status === "running"}
-                                    >
-                                      <Icon
-                                        icon="lucide:refresh-cw"
-                                        size={18}
-                                      />
-                                    </Button>
-                                  </Tooltip>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-                    </CardBody>
-                  </Card>
-                </div>
-              </AccordionItem>
-            ))}
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      </CardBody>
+                    </Card>
+                  </div>
+                </AccordionItem>
+              );
+            })}
           </Accordion>
         </div>
       </div>

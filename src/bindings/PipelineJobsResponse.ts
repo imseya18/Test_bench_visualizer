@@ -3,6 +3,7 @@ import { Job } from "./Job";
 
 export type PipelineJobsResponse = {
   id: bigint;
+  title: string;
   status: string;
   project_id: bigint;
   created_at: string;
