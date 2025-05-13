@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { CardType, CardStatus } from "./global-variable";
 import { ByCardsResponse } from "../bindings/ByCardsResponse";
 import { invoke } from "@tauri-apps/api/core";
-import { card } from "@heroui/react";
 import { PipelineJobsResponse } from "../bindings/PipelineJobsResponse";
 export type CardPropreties = {
   id: string;
@@ -20,7 +19,7 @@ type CardSlice = {
 };
 
 type GitLabSlice = {
-  gitLabData: ByCardsResponse | undefined;
+  gitLabData: ByCardsResponse;
   isLoading: boolean;
   error: string | null;
   fetchGitLabData: () => Promise<void>;
@@ -46,7 +45,7 @@ export const useBoardStore = create<CardSlice & GitLabSlice>((set, get) => ({
   getCard: (id) => get().cards[id],
 
   // GitLabSlice
-  gitLabData: undefined,
+  gitLabData: {},
   isLoading: false,
   error: null,
   fetchGitLabData: async () => {
