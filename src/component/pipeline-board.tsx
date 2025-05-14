@@ -7,11 +7,18 @@ import {
   Accordion,
   AccordionItem,
   Tooltip,
+  Spinner,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useBoardStore } from "../utils/board-store";
-import { PipelineJobsResponse } from "../bindings/PipelineJobsResponse";
+import {
+  JobStatus,
+  jobKeys,
+  getSuccesfulJobSize,
+  getJobSize,
+  getStatusColor,
+} from "../utils/job-utilities";
 //Wrapper needed to path component's props to our navigation
 export function PipelineDetailsWrapper() {
   const { state } = useLocation() as {
@@ -37,10 +44,6 @@ interface PipelineDetailsProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-type JobKeys = "build" | "cve" | "test" | "test_offline" | "unknown";
-type JobStatus = "running" | "completed" | "failed" | "pending" | "success";
-const jobKeys: JobKeys[] = ["build", "cve", "test", "test_offline", "unknown"];
 
 export function PipelineDetails({
   deviceId,
@@ -68,52 +71,17 @@ export function PipelineDetails({
   if (isLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
-        <span>Chargement en cours…</span>
+        <Spinner size="lg" label="Waiting for result..."></Spinner>
       </div>
     );
   }
-
-  //Mock pipeline data
-  //   const [pipelines] = React.useState<Pipeline[]>(() => {
-  //     const jobTypes: ("build" | "test" | "deploy" | "validate")[] = [
-  //       "build",
-  //       "test",
-  //       "deploy",
-  //       "validate",
-  //     ];
-  //     return Array.from({ length: 5 }, (_, i) => ({
-  //       id: `pip-${i + 1}`,
-  //       name: `Pipeline ${i + 1}`,
-  //       status: ["running", "completed", "failed", "pending"][
-  //         Math.floor(Math.random() * 4)
-  //       ] as Pipeline["status"],
-  //       createdAt: new Date(Date.now() - Math.random() * 10000000000),
-  //       updatedAt: new Date(Date.now() - Math.random() * 1000000000),
-  //       jobs: Array.from(
-  //         { length: 8 + Math.floor(Math.random() * 4) },
-  //         (_, j) => ({
-  //           id: `job-${i}-${j}`,
-  //           name: `${jobTypes[j % 4]} ${Math.floor(j / 4) + 1}`,
-  //           type: jobTypes[j % 4],
-  //           status: ["success", "failed", "running", "pending"][
-  //             Math.floor(Math.random() * 4)
-  //           ] as "success" | "failed" | "running" | "pending",
-  //           duration: Math.floor(Math.random() * 300),
-  //         })
-  //       ),
-  //     }));
-  //   });
-
-  const getStatusColor = (status: JobStatus) => {
-    const colors = {
-      running: "primary",
-      completed: "success",
-      failed: "danger",
-      pending: "warning",
-      success: "success",
-    };
-    return colors[status] || "default";
-  };
+  if (pipelines.length === 0) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center">
+        No pipelines found for « {deviceName} »
+      </div>
+    );
+  }
 
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -121,22 +89,6 @@ export function PipelineDetails({
     return `${minutes}m ${remainingSeconds}s`;
   };
 
-  const getJobSize = (pipeline: PipelineJobsResponse) => {
-    const jobLen = jobKeys.reduce(
-      (sum, type) => sum + pipeline[type].length,
-      0
-    );
-    return jobLen;
-  };
-
-  const getSuccesfulJobSize = (pipeline: PipelineJobsResponse) => {
-    return jobKeys.reduce((sum, type) => {
-      const success = pipeline[type].filter(
-        (job) => job.status === "success"
-      ).length;
-      return sum + success;
-    }, 0);
-  };
   return pipelines ? (
     <div className="fixed inset-0 bg-content1 z-50 overflow-auto">
       <div className="p-6">
@@ -172,11 +124,13 @@ export function PipelineDetails({
             selectionMode="multiple"
             className="gap-4 flex flex-col w-full"
           >
-            {pipelines.map((pipeline) => {
+            {pipelines.reverse().map((pipeline) => {
               const successfulJobLen = getSuccesfulJobSize(pipeline);
               const totalJobLen = getJobSize(pipeline);
               const isPipelineSuccess =
                 successfulJobLen === totalJobLen ? true : false;
+              const date = new Date(pipeline.updated_at);
+
               return (
                 <AccordionItem
                   key={pipeline.id}
@@ -198,8 +152,8 @@ export function PipelineDetails({
                         <div>
                           <div className="font-semibold">{pipeline.title}</div>
                           <div className="text-small text-default-500">
-                            Started {pipeline.created_at} at{" "}
-                            {pipeline.created_at}
+                            Started {date.toLocaleDateString("fr-FR")} at{" "}
+                            {date.toLocaleTimeString("fr-FR")}
                           </div>
                         </div>
                       </div>
@@ -207,7 +161,7 @@ export function PipelineDetails({
                         <Badge
                           color={
                             isPipelineSuccess
-                              ? ("success" as JobStatus)
+                              ? "success"
                               : getStatusColor(pipeline.status as JobStatus)
                           }
                           variant="solid"
@@ -240,8 +194,6 @@ export function PipelineDetails({
                                       ? "lucide:flask-conical"
                                       : type === "test_offline"
                                       ? "lucide:flask-conical-off"
-                                      : type === "unknown"
-                                      ? "lucide:rocket"
                                       : "lucide:check-circle"
                                   }
                                   className="text-primary"

@@ -1,8 +1,10 @@
-import { create } from "zustand";
-import { CardType, CardStatus } from "./global-variable";
-import { ByCardsResponse } from "../bindings/ByCardsResponse";
-import { invoke } from "@tauri-apps/api/core";
-import { PipelineJobsResponse } from "../bindings/PipelineJobsResponse";
+import { create } from 'zustand';
+import { CardType, CardStatus } from './global-variable';
+import { ByCardsResponse } from '../bindings/ByCardsResponse';
+import { invoke } from '@tauri-apps/api/core';
+import { PipelineJobsResponse } from '../bindings/PipelineJobsResponse';
+import { resourceDir } from '@tauri-apps/api/path';
+import { load } from '@tauri-apps/plugin-store';
 export type CardPropreties = {
   id: string;
   type?: CardType;
@@ -21,12 +23,19 @@ type CardSlice = {
 type GitLabSlice = {
   gitLabData: ByCardsResponse;
   isLoading: boolean;
-  error: string | null;
+  error: string | undefined;
   fetchGitLabData: () => Promise<void>;
   getCardsPipeline(cardType: string): PipelineJobsResponse[];
 };
 
-export const useBoardStore = create<CardSlice & GitLabSlice>((set, get) => ({
+type JsonSlice = {
+  boards: Record<string, CardPropreties>[];
+  jsonLoading: boolean;
+  jsonError: string | undefined;
+  fetchBoards: () => Promise<void>;
+  pushBoards: (board: Record<string, CardPropreties>) => Promise<void>;
+};
+export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, get) => ({
   // CardSlice
   cards: {},
   initCard: (id, initial) => {
@@ -47,16 +56,17 @@ export const useBoardStore = create<CardSlice & GitLabSlice>((set, get) => ({
   // GitLabSlice
   gitLabData: {},
   isLoading: false,
-  error: null,
+  error: undefined,
+
   fetchGitLabData: async () => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: undefined });
     try {
-      console.log("start api call");
-      const result = await invoke<ByCardsResponse>("test_api_call");
+      console.log('start api call');
+      const result = await invoke<ByCardsResponse>('test_api_call');
       set({ gitLabData: result });
-    } catch (err: any) {
-      console.error(err);
-      set({ error: err.message });
+    } catch (error: any) {
+      console.error(error);
+      set({ error: error.message });
     } finally {
       set({ isLoading: false });
       console.log(get().gitLabData);
@@ -64,14 +74,54 @@ export const useBoardStore = create<CardSlice & GitLabSlice>((set, get) => ({
   },
 
   getCardsPipeline: (cardType): PipelineJobsResponse[] => {
-    const data = get().gitLabData;
-    if (!data) {
-      throw "No API data";
+    const data = get().gitLabData[cardType] ?? {};
+    return Object.values(data);
+  },
+
+  //Json Slice
+
+  boards: [],
+  jsonLoading: false,
+  jsonError: undefined,
+
+  fetchBoards: async () => {
+    set({ jsonLoading: true, error: undefined });
+    try {
+      const dir = await resourceDir();
+      console.log(dir);
+      const store = await load(dir + '/json/store.json', { autoSave: true });
+      const data = (await store.get<Record<string, CardPropreties>[]>('Boards')) ?? [];
+      const token = await store.get('GITLAB_TOKEN');
+      console.log('token: ' + token);
+      set({ boards: data });
+    } catch (error: any) {
+      console.error(error);
+      set({ jsonError: error.message });
+    } finally {
+      set({ jsonLoading: false });
     }
-    const pipelines = data[cardType];
-    if (!data) {
-      throw "No pipelines for this card";
+  },
+
+  pushBoards: async (board: Record<string, CardPropreties>) => {
+    set({ jsonLoading: true, error: undefined });
+    try {
+      //if our boards has no data we have to get an array to use the [...oldtab, newtab] pattern so we create an empty one
+      const currentBoards = get().boards ?? [];
+      const updatedBoards = [...currentBoards, board];
+      set({
+        boards: updatedBoards,
+      });
+      const allBoards = get().boards;
+      const dir = await resourceDir();
+      const store = await load(dir + '/json/store.json', { autoSave: true });
+      await store.set('Boards', allBoards);
+      console.log(await store.get('GITLAB_TOKEN'));
+      await store.save();
+    } catch (error: any) {
+      console.error(error);
+      set({ jsonError: error.message });
+    } finally {
+      set({ jsonLoading: false });
     }
-    return Object.values(pipelines);
   },
 }));
