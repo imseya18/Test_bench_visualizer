@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @config "../tailwind.config.js";
 
 html,
@@ -7,4 +7,32 @@ body,
   color-scheme: dark;
   height: 100%;
   margin: 0;
+}
+
+/* Apply dark mode by default to modals and popovers */
+.heroui-modal-content,
+.heroui-popover-content {
+  color-scheme: dark;
+}
+
+/* Ensure all HeroUI modals and popovers have dark mode */
+:root {
+  --heroui-modal-background: var(--heroui-content1-DEFAULT);
+  --heroui-popover-background: var(--heroui-content1-DEFAULT);
+}
+
+/* Add global dark mode to all dropdown menus and selectors */
+.heroui-dropdown-content,
+.heroui-select-popover,
+.heroui-listbox,
+.heroui-menu,
+.heroui-tooltip {
+  color-scheme: dark !important;
+  background-color: var(--heroui-content2-DEFAULT) !important;
+  color: var(--heroui-foreground) !important;
+}
+
+/* Force dark mode on all popover content */
+[data-overlay-container='true'] > div {
+  color-scheme: dark !important;
 }

@@ -1,13 +1,28 @@
-import { Button, Spinner } from '@heroui/react';
-
+import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-
+import { Card, CardBody, CardFooter, Badge, Button, Tooltip, Spinner } from '@heroui/react';
+import { Icon } from '@iconify/react';
 import { useBoardStore } from '../utils/board-store';
+
+const formatRelativeTime = (date: Date): string => {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays}d ago`;
+};
 export function Dashboard() {
   const boards = useBoardStore((state) => state.boards);
   const loading = useBoardStore((state) => state.jsonLoading);
   const error = useBoardStore((state) => state.jsonError);
-
+  const navigate = useNavigate();
   useEffect(() => {
     console.log(boards);
   }, [boards]);
@@ -15,20 +30,110 @@ export function Dashboard() {
   if (loading) {
     return <Spinner label='Fetching Data...'></Spinner>;
   }
-  if (!boards || boards.length === 0) {
+  if (!boards || Object.values(boards).length === 0) {
     return (
       <div className='flex-1 flex flex-col items-center justify-center gap-4 w-fullscreen'>
         No Board Found
-        <Button>Create Board</Button>
+        <Button onPress={() => navigate('/board')}>Create Board</Button>
       </div>
     );
   }
-
+  //   return <></>;
   return (
-    <div className='grid gap-4 p-4 grid-cols-5'>
-      {/* {boards.map((cards) => (
-        <DeviceCard key={cards.id} id={cards.id} />
-      ))} */}
+    <div className='p-4 flex-1 min-h-0'>
+      <div className='flex justify-between items-center mb-6'>
+        <div>
+          <h1 className='text-2xl font-bold'>Dashboard</h1>
+          <p className='text-default-500'>Manage and monitor your boards</p>
+        </div>
+        <Button
+          color='primary'
+          startContent={<Icon icon='lucide:plus' />}
+          onPress={() => navigate('/board')}
+        >
+          New Board
+        </Button>
+      </div>
+
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        {Object.values(boards).map((board) => (
+          <Card key={board.id} isPressable className='border border-content3'>
+            <CardBody className='p-0'>
+              <div className='h-32 bg-content2 relative overflow-hidden'>
+                {/* Board thumbnail or visualization */}
+                <div className='absolute inset-0 flex items-center justify-center'>
+                  {board.deviceCount > 0 ? (
+                    <div className='grid grid-cols-5 gap-1 p-2 opacity-70 scale-75'>
+                      {Array.from({ length: Math.min(30, board.deviceCount) }).map((_, i) => (
+                        <div
+                          key={i}
+                          className={`w-4 h-4 rounded-sm ${
+                            i < board.activeDevices ? 'bg-success' : 'bg-default-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <Icon icon='lucide:layout-grid' size={48} className='text-default-300' />
+                  )}
+                </div>
+
+                {/* Status badge */}
+                <div className='absolute top-2 right-2'>
+                  <Badge color={board.activeDevices > 0 ? 'success' : 'default'} variant='flat'>
+                    {board.activeDevices > 0 ? 'Active' : 'Inactive'}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className='p-4'>
+                <h2 className='text-xl font-semibold mb-1'>{board.name}</h2>
+                <p className='text-default-500 text-small mb-3'>{board.description}</p>
+
+                {/* <div className='flex flex-wrap gap-1 mb-3'>
+                  {board.tags.map((tag) => (
+                    <Badge key={tag} variant='flat' size='sm' className='capitalize'>
+                      {tag}
+                    </Badge>
+                  ))}
+                </div> */}
+
+                <div className='flex justify-between items-center'>
+                  <div className='flex items-center gap-1'>
+                    <Icon icon='lucide:cpu' size={16} className='text-default-500' />
+                    <span className='text-small'>
+                      {board.activeDevices}/{board.deviceCount} devices
+                    </span>
+                  </div>
+                  <Tooltip content={board.lastUpdated.toLocaleString()}>
+                    <div className='flex items-center gap-1 text-default-500'>
+                      <Icon icon='lucide:clock' size={14} />
+                      <span className='text-tiny'>{formatRelativeTime(board.lastUpdated)}</span>
+                    </div>
+                  </Tooltip>
+                </div>
+              </div>
+            </CardBody>
+            <CardFooter className='flex justify-between border-t border-content3'>
+              <Button
+                size='sm'
+                variant='light'
+                startContent={<Icon icon='lucide:settings' size={16} />}
+              >
+                Configure
+              </Button>
+              <Button
+                size='sm'
+                color='primary'
+                variant='flat'
+                startContent={<Icon icon='lucide:external-link' size={16} />}
+              >
+                Open
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

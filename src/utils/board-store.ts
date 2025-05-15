@@ -13,6 +13,17 @@ export type CardPropreties = {
   totalTests?: number;
 };
 
+export type BoardProperties = {
+  id: string;
+  name: string;
+  description: string;
+  cards: Record<string, CardPropreties>;
+  deviceCount: number;
+  activeDevices: number;
+  lastUpdated: Date;
+};
+
+//? I choose a Record instead of an Array to easily update the state of my innerCards
 type CardSlice = {
   cards: Record<string, CardPropreties>;
   initCard(id: string, initial: CardPropreties): void;
@@ -29,12 +40,13 @@ type GitLabSlice = {
 };
 
 type JsonSlice = {
-  boards: Record<string, CardPropreties>[];
+  boards: Record<string, BoardProperties>;
   jsonLoading: boolean;
   jsonError: string | undefined;
   fetchBoards: () => Promise<void>;
-  pushBoards: (board: Record<string, CardPropreties>) => Promise<void>;
+  pushBoards: (board: BoardProperties) => Promise<void>;
 };
+
 export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, get) => ({
   // CardSlice
   cards: {},
@@ -80,7 +92,7 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
 
   //Json Slice
 
-  boards: [],
+  boards: {},
   jsonLoading: false,
   jsonError: undefined,
 
@@ -90,9 +102,7 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
       const dir = await resourceDir();
       console.log(dir);
       const store = await load(dir + '/json/store.json', { autoSave: true });
-      const data = (await store.get<Record<string, CardPropreties>[]>('Boards')) ?? [];
-      const token = await store.get('GITLAB_TOKEN');
-      console.log('token: ' + token);
+      const data = (await store.get<Record<string, BoardProperties>>('Boards')) ?? {};
       set({ boards: data });
     } catch (error: any) {
       console.error(error);
@@ -102,20 +112,20 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
     }
   },
 
-  pushBoards: async (board: Record<string, CardPropreties>) => {
+  //todo change the Data to store on a form like Records<nameOfTheBoard, typeOfCard[]>
+  pushBoards: async (board: BoardProperties) => {
     set({ jsonLoading: true, error: undefined });
     try {
-      //if our boards has no data we have to get an array to use the [...oldtab, newtab] pattern so we create an empty one
-      const currentBoards = get().boards ?? [];
-      const updatedBoards = [...currentBoards, board];
       set({
-        boards: updatedBoards,
+        boards: {
+          ...get().boards,
+          [board.name]: board,
+        },
       });
       const allBoards = get().boards;
       const dir = await resourceDir();
       const store = await load(dir + '/json/store.json', { autoSave: true });
       await store.set('Boards', allBoards);
-      console.log(await store.get('GITLAB_TOKEN'));
       await store.save();
     } catch (error: any) {
       console.error(error);

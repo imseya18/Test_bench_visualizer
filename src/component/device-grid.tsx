@@ -1,11 +1,21 @@
 import '../App.css';
 import { DeviceCard } from './device-card';
-import { Button } from '@heroui/react';
-import React, { useEffect } from 'react';
+import { BoardProperties } from '../utils/board-store';
+import { useEffect, useState } from 'react';
 import { CardPropreties } from '../utils/board-store';
 import { useBoardStore } from '../utils/board-store';
 import { nanoid } from 'nanoid';
-
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+  Textarea,
+  Input,
+} from '@heroui/react';
 interface DeviceGridProperties {
   rows: number;
   columns: number;
@@ -17,8 +27,12 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   const cards = useBoardStore((state) => state.cards);
   const boards = useBoardStore((state) => state.boards);
   const loading = useBoardStore((state) => state.jsonLoading);
-  const error = useBoardStore((state) => state.jsonError);
+  const jsonError = useBoardStore((state) => state.jsonError);
   const pushboard = useBoardStore((state) => state.pushBoards);
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+
   useEffect(() => {
     // to prevent reRender when ReactMode.Strict enabled
     if (Object.keys(cards).length > 0) return;
@@ -28,10 +42,28 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
     }
   }, []);
 
-  const saveBoard = () => {
-    console.log(cards);
-    pushboard(cards);
+  const handleSubmitNewBoard = () => {
+    console.log(name);
+    console.log(description);
+    const deviceCount = Object.keys(cards).length;
+    const activeDevices = Object.values(cards).reduce((acc, card) => acc + (card.type ? 1 : 0), 0);
+
+    const newBoard: BoardProperties = {
+      id: nanoid(),
+      name,
+      cards,
+      description,
+      deviceCount,
+      activeDevices,
+      lastUpdated: new Date(),
+    };
+    pushboard(newBoard);
+    // Reset the name and Description for the next save;
+    setName('');
+    setDescription('');
+    onClose();
   };
+
   return (
     <>
       <div className={`grid gap-4 p-4 flex-1 min-h-0 dark:bg-background grid-cols-5`}>
@@ -40,9 +72,50 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
         ))}
       </div>
       {!loading && (
-        <div>
-          <Button onPress={saveBoard}>save board</Button>
-        </div>
+        <>
+          <Button onPress={onOpen}>Save Board</Button>
+          <Modal
+            isOpen={isOpen}
+            placement='top-center'
+            className='dark text-white'
+            onOpenChange={onOpenChange}
+          >
+            <ModalContent>
+              {(onClose) => (
+                <>
+                  <ModalHeader className='flex flex-col items-center gap-1'>
+                    Board Infos
+                  </ModalHeader>
+                  <ModalBody>
+                    <Input
+                      label='Board Name'
+                      placeholder='Enter board name'
+                      isRequired
+                      variant='bordered'
+                      onValueChange={(e) => setName(e)}
+                    />
+
+                    <Textarea
+                      label='Description'
+                      placeholder='Enter board description'
+                      variant='bordered'
+                      minRows={3}
+                      onValueChange={(e) => setDescription(e)}
+                    />
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button color='danger' variant='flat' onPress={onClose}>
+                      Close
+                    </Button>
+                    <Button color='primary' isDisabled={!name} onPress={handleSubmitNewBoard}>
+                      Save
+                    </Button>
+                  </ModalFooter>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
+        </>
       )}
     </>
   );
