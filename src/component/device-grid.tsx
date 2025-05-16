@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { CardPropreties } from '../utils/board-store';
 import { useBoardStore } from '../utils/board-store';
 import { nanoid } from 'nanoid';
+import { Icon } from '@iconify/react';
 import {
   Modal,
   ModalContent,
@@ -14,12 +15,21 @@ import {
   Button,
   useDisclosure,
   Textarea,
+  Select,
+  SelectItem,
   Input,
 } from '@heroui/react';
 interface DeviceGridProperties {
   rows: number;
   columns: number;
 }
+
+export const day = [
+  { key: '1', label: 'Today' },
+  { key: '7', label: 'Last 7 Days' },
+  { key: '30', label: 'Last 30 Days' },
+  { key: '180', label: 'Last 180 Days' },
+];
 
 export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   const total = rows * columns;
@@ -29,6 +39,7 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   const loading = useBoardStore((state) => state.jsonLoading);
   const jsonError = useBoardStore((state) => state.jsonError);
   const pushboard = useBoardStore((state) => state.pushBoards);
+  const fetchGitLabData = useBoardStore((s) => s.fetchGitLabData);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -65,15 +76,18 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   };
 
   return (
-    <>
-      <div className={`grid gap-4 p-4 flex-1 min-h-0 dark:bg-background grid-cols-5`}>
-        {Object.keys(cards).map((id) => (
-          <DeviceCard key={id} id={id}></DeviceCard>
-        ))}
-      </div>
+    <div className='flex-1 flex min-h-0 flex-col'>
       {!loading && (
-        <>
-          <Button onPress={onOpen}>Save Board</Button>
+        <div className='flex justify-between items-center pl-3 pr-3'>
+          <Select className='max-w-xs' label='Select a period'>
+            {day.map((day) => (
+              <SelectItem key={day.key}>{day.label}</SelectItem>
+            ))}
+          </Select>
+          <Button onPress={fetchGitLabData}>Refresh data</Button>
+          <Button onPress={onOpen} color='primary' startContent={<Icon icon='lucide:plus' />}>
+            Save Board
+          </Button>
           <Modal
             isOpen={isOpen}
             placement='top-center'
@@ -115,8 +129,13 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
               )}
             </ModalContent>
           </Modal>
-        </>
+        </div>
       )}
-    </>
+      <div className={`grid gap-4 p-4 flex-1 min-h-0 dark:bg-background grid-cols-5`}>
+        {Object.keys(cards).map((id) => (
+          <DeviceCard key={id} id={id}></DeviceCard>
+        ))}
+      </div>
+    </div>
   );
 }
