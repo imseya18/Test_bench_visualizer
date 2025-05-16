@@ -26,7 +26,7 @@ function App() {
           <div className='flex-1 flex min-h-0'>
             <Routes>
               <Route path='/' element={<Dashboard />} />
-              <Route path='/board' element={<DeviceGrid rows={5} columns={5} />} />
+              <Route path='/board' element={<DeviceGrid rows={3} columns={5} />} />
               <Route path='/Settings' element={<Settings />} />
               <Route path='/pipelines' element={<PipelineDetailsWrapper />} />
             </Routes>

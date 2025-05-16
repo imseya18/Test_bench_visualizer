@@ -3,8 +3,9 @@ import { useEffect } from 'react';
 import { Card, CardBody, CardFooter, Badge, Button, Tooltip, Spinner } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useBoardStore } from '../utils/board-store';
-
-const formatRelativeTime = (date: Date): string => {
+import { CardPropreties } from '../utils/board-store';
+const formatRelativeTime = (dateEntry: Date): string => {
+  const date = new Date(dateEntry);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / (1000 * 60));
@@ -18,11 +19,13 @@ const formatRelativeTime = (date: Date): string => {
   const diffDays = Math.floor(diffHours / 24);
   return `${diffDays}d ago`;
 };
+
 export function Dashboard() {
   const boards = useBoardStore((state) => state.boards);
   const loading = useBoardStore((state) => state.jsonLoading);
   const error = useBoardStore((state) => state.jsonError);
   const navigate = useNavigate();
+  const setCards = useBoardStore((state) => state.setCards);
   useEffect(() => {
     console.log(boards);
   }, [boards]);
@@ -30,7 +33,7 @@ export function Dashboard() {
   if (loading) {
     return <Spinner label='Fetching Data...'></Spinner>;
   }
-  if (!boards || Object.values(boards).length === 0) {
+  if (!boards) {
     return (
       <div className='flex-1 flex flex-col items-center justify-center gap-4 w-fullscreen'>
         No Board Found
@@ -38,6 +41,11 @@ export function Dashboard() {
       </div>
     );
   }
+
+  const goToSelectedBoards = (cards: Record<string, CardPropreties>) => {
+    setCards(cards);
+    navigate('/board');
+  };
   //   return <></>;
   return (
     <div className='p-4 flex-1 min-h-0'>
@@ -49,7 +57,7 @@ export function Dashboard() {
         <Button
           color='primary'
           startContent={<Icon icon='lucide:plus' />}
-          onPress={() => navigate('/board')}
+          onPress={() => goToSelectedBoards({})}
         >
           New Board
         </Button>
@@ -79,11 +87,11 @@ export function Dashboard() {
                 </div>
 
                 {/* Status badge */}
-                <div className='absolute top-2 right-2'>
+                {/* <div className='absolute top-2 right-2'>
                   <Badge color={board.activeDevices > 0 ? 'success' : 'default'} variant='flat'>
                     {board.activeDevices > 0 ? 'Active' : 'Inactive'}
                   </Badge>
-                </div>
+                </div> */}
               </div>
 
               <div className='p-4'>
@@ -127,6 +135,7 @@ export function Dashboard() {
                 color='primary'
                 variant='flat'
                 startContent={<Icon icon='lucide:external-link' size={16} />}
+                onPress={() => goToSelectedBoards(board.cards)}
               >
                 Open
               </Button>

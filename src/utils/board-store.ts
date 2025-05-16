@@ -29,6 +29,7 @@ type CardSlice = {
   initCard(id: string, initial: CardPropreties): void;
   updateCard(id: string, patch: Partial<CardPropreties>): void;
   getCard(id: string): CardPropreties | undefined;
+  setCards(cards: Record<string, CardPropreties>): void;
 };
 
 type GitLabSlice = {
@@ -64,7 +65,7 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
       return { cards: stateCards };
     }),
   getCard: (id) => get().cards[id],
-
+  setCards: (cards) => set({ cards }),
   // GitLabSlice
   gitLabData: {},
   isLoading: false,
@@ -100,7 +101,6 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
     set({ jsonLoading: true, error: undefined });
     try {
       const dir = await resourceDir();
-      console.log(dir);
       const store = await load(dir + '/json/store.json', { autoSave: true });
       const data = (await store.get<Record<string, BoardProperties>>('Boards')) ?? {};
       set({ boards: data });

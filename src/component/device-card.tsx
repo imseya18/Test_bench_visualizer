@@ -1,12 +1,24 @@
-import React from 'react';
-import { Card, CardBody, CardFooter, Badge, Tooltip, Divider, Spinner } from '@heroui/react';
+import { Card, CardBody, CardFooter, Tooltip, Divider, Spinner } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { CardPropreties } from '../utils/board-store';
 import { useBoardStore } from '../utils/board-store';
 import { useNavigate } from 'react-router-dom';
 import { ChooseCard } from './choose-card';
-import { getSuccesfulJobSize, getJobSize } from '../utils/job-utilities';
+import { CardProgressBar } from './card-progress-bar';
+import {
+  getSuccessfulJobTypeSize,
+  getJobTypeSize,
+  getStatusColor,
+  getJobTypeStatus,
+} from '../utils/job-utilities';
+import { PipelineJobsResponse } from '../bindings/PipelineJobsResponse';
 
+// function getPipelineStatusByCard(pipeline: PipelineJobsResponse) {
+//   const successJob = getSuccessfulJobTypeSize(pipeline);
+//   const totalJoblen = getJobTypeSize(pipeline);
+
+//   return successJob === totalJoblen ? 'success' : 'failed';
+// }
 export function DeviceCard({ id }: CardPropreties) {
   const useGetCard = useBoardStore((state) => state.getCard);
   const card = useGetCard(id);
@@ -41,38 +53,28 @@ export function DeviceCard({ id }: CardPropreties) {
   if (!lastestPipeline) {
     return <div className='flex justify-center items-center'>no pipeline found for {type}</div>;
   }
-  const completedTests = getSuccesfulJobSize(lastestPipeline);
-  const totalTests = getJobSize(lastestPipeline);
-  const progressPercentage = completedTests && totalTests ? (completedTests / totalTests) * 100 : 0;
-  const status = lastestPipeline.status;
 
+  const status = getJobTypeStatus(lastestPipeline);
+  const borederColor = getStatusColor(status);
   return (
-    <Card className='  flex flex-col h-full border-gray-500 border-1'>
+    <Card className={`flex flex-col h-full border-${borederColor} border-1`}>
       <CardBody className='p-3 gap-2'>
         <div className='flex justify-between items-center'>
           <h3 className='text-medium font-semibold'>{type}</h3>
-          <Badge color={status === 'RUNNING' ? 'success' : 'default'} variant='flat' size='sm'>
+          {/* <Badge color={status === 'RUNNING' ? 'success' : 'default'} variant='flat' size='sm'>
             {status}
-          </Badge>
+          </Badge> */}
         </div>
 
         <Divider className='my-2' />
+        {/* Build Result */}
+        <CardProgressBar name={'build'} pipelineJobs={lastestPipeline} />
+        {/* test Result */}
+        <CardProgressBar name={'test'} pipelineJobs={lastestPipeline} />
+        {/* test-offiline Result */}
+        <CardProgressBar name={'test_offline'} pipelineJobs={lastestPipeline} />
 
-        <div className='flex justify-between items-center'>
-          <span className='text-small text-default-500'>Tests:</span>
-          <span className='text-small font-medium'>
-            {completedTests}/{totalTests}
-          </span>
-        </div>
-
-        <div className='w-full bg-default-100 rounded-full h-2 mt-1'>
-          <div
-            className={`h-2 rounded-full ${status === 'RUNNING' ? 'bg-success' : 'bg-default-400'}`}
-            style={{ width: `${progressPercentage}%` }}
-          ></div>
-        </div>
-
-        <div className='mt-3 grid grid-cols-2 gap-2'>
+        <div className='mt-3 gap-2'>
           <Tooltip content='Pipelines Data'>
             <div
               className='bg-content2 rounded-md p-2 flex items-center justify-center'
@@ -81,17 +83,17 @@ export function DeviceCard({ id }: CardPropreties) {
               <Icon icon='lucide:bar-chart-2' className='text-default-400' />
             </div>
           </Tooltip>
-          <Tooltip content='Future: Temperature Data'>
+          {/* <Tooltip content='Future: Temperature Data'>
             <div className='bg-content2 rounded-md p-2 flex items-center justify-center'>
               <Icon icon='lucide:thermometer' className='text-default-400' />
             </div>
-          </Tooltip>
+          </Tooltip> */}
         </div>
       </CardBody>
       <CardFooter className='p-2 border-t border-content2 justify-between'>
         <div className='flex items-center'>
           <Icon icon='lucide:cpu' className='text-default-400 mr-1' size={14} />
-          <span className='text-tiny text-default-400'>Unit {id}</span>
+          <span className='text-tiny text-default-400'>{lastestPipeline.id.toString()}</span>
         </div>
         <Tooltip content='View Details'>
           <Icon icon='lucide:chevron-right' className='text-default-400' />
