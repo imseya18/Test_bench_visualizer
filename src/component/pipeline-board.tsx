@@ -51,13 +51,13 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
   const isLoading = useBoardStore((state) => state.isLoading);
   const pipelines = useMemo(
     () =>
-      isLoading
+      isLoading && Object.keys(pipelinesRecord).length === 0
         ? [] // pendant le chargement, un tableau vide
         : Object.values(pipelinesRecord),
     [isLoading, pipelinesRecord],
   );
 
-  if (isLoading) {
+  if (isLoading && pipelines.length === 0) {
     return (
       <div className='fixed inset-0 flex items-center justify-center'>
         <Spinner size='lg' label='Waiting for result...'></Spinner>
