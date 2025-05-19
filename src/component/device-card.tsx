@@ -52,7 +52,14 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
   };
 
   if (!type) {
-    return <ChooseCard id={id} onBoardPosition={onBoardPosition} />;
+    return (
+      <Card
+        isPressable={false}
+        className='  flex flex-col h-full border-gray-500 border-1 justify-center items-center'
+      >
+        <ChooseCard id={id} onBoardPosition={onBoardPosition} />
+      </Card>
+    );
   }
 
   if (isLoading && Object.keys(gitLabData).length === 0) {
@@ -70,7 +77,15 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
   const pipeline = Object.values(pipelinesRecord);
   const lastestPipeline = pipeline.at(-1);
   if (!lastestPipeline) {
-    return <div className='flex justify-center items-center'>no pipeline found for {type}</div>;
+    return (
+      <Card
+        isPressable={false}
+        className='  flex flex-col h-full border-gray-500 border-1 justify-center items-center'
+      >
+        <div className='mb-5'>no pipeline found for {type}</div>
+        <ChooseCard id={id} onBoardPosition={onBoardPosition} />
+      </Card>
+    );
   }
 
   const status = getJobTypeStatus(lastestPipeline, ['build', 'test', 'test_offline']);
@@ -84,9 +99,6 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
       <CardBody className='p-3 gap-2'>
         <div className='flex justify-between items-center'>
           <h3 className='text-sm font-semibold'>{type}</h3>
-          {/* <Badge color={status === 'RUNNING' ? 'success' : 'default'} variant='flat' size='sm'>
-            {status}
-          </Badge> */}
           <Dropdown>
             <DropdownTrigger>
               <Button
@@ -114,31 +126,12 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
         <CardProgressBar name={'test'} pipelineJobs={lastestPipeline} />
         {/* test-offiline Result */}
         <CardProgressBar name={'test_offline'} pipelineJobs={lastestPipeline} />
-
-        {/* <div className='mt-3 gap-2'>
-          <Tooltip content='Pipelines Data'>
-            <div
-              className='bg-content2 rounded-md p-2 flex items-center justify-center'
-              onClick={() => openPipelineDetails(id, type)}
-            >
-              <Icon icon='lucide:bar-chart-2' className='text-default-400' />
-            </div>
-          </Tooltip>
-          <Tooltip content='Future: Temperature Data'>
-            <div className='bg-content2 rounded-md p-2 flex items-center justify-center'>
-              <Icon icon='lucide:thermometer' className='text-default-400' />
-            </div>
-          </Tooltip>
-        </div> */}
       </CardBody>
       <CardFooter className='p-2 border-t border-content2 justify-between'>
         <div className='flex items-center'>
           <Icon icon='lucide:cpu' className='text-default-400 mr-1' size={14} />
           <span className='text-tiny text-default-400'>{status}</span>
         </div>
-        {/* <Tooltip content='View Details'>
-          <Icon icon='lucide:chevron-right' className='text-default-400' />
-        </Tooltip> */}
       </CardFooter>
     </Card>
   );

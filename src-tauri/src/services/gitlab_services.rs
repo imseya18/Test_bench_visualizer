@@ -27,7 +27,7 @@ pub async fn get_project_pipelines(
     project_id: &ProjectId,
     client: &AsyncGitlab,
     since_day: u64,
-    pipeline_name: String
+    pipeline_name: String,
 ) -> Result<Vec<Pipeline>, Box<dyn std::error::Error>> {
     let endpoint = Pipelines::builder()
         .project(project_id.to_string())

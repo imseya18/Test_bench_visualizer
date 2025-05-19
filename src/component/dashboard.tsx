@@ -23,7 +23,6 @@ const formatRelativeTime = (dateEntry: Date): string => {
 export function Dashboard() {
   const boards = useBoardStore((state) => state.boards);
   const loading = useBoardStore((state) => state.jsonLoading);
-  const error = useBoardStore((state) => state.jsonError);
   const navigate = useNavigate();
   const setCards = useBoardStore((state) => state.setCards);
   useEffect(() => {
@@ -33,7 +32,7 @@ export function Dashboard() {
   if (loading) {
     return <Spinner label='Fetching Data...'></Spinner>;
   }
-  if (!boards) {
+  if (!boards || Object.keys(boards).length === 0) {
     return (
       <div className='flex-1 flex flex-col items-center justify-center gap-4 w-fullscreen'>
         No Board Found
@@ -46,7 +45,6 @@ export function Dashboard() {
     setCards(cards);
     navigate('/board');
   };
-  //   return <></>;
   return (
     <div className='p-4 flex-1 min-h-0'>
       <div className='flex justify-between items-center mb-6'>
@@ -72,40 +70,28 @@ export function Dashboard() {
                 <div className='absolute inset-0 flex items-center justify-center'>
                   {board.deviceCount > 0 ? (
                     <div className='grid grid-cols-5 gap-1 p-2 opacity-70 scale-75'>
-                      {Array.from({ length: Math.min(30, board.deviceCount) }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`w-4 h-4 rounded-sm ${
-                            i < board.activeDevices ? 'bg-success' : 'bg-default-300'
-                          }`}
-                        />
-                      ))}
+                      {Object.values(board.cards)
+                        .sort((a, b) => b.onBoardPosition - a.onBoardPosition)
+                        .map((card) => {
+                          return (
+                            <div
+                              key={card.id}
+                              className={`w-4 h-4 rounded-sm ${
+                                card.type ? 'bg-success' : 'bg-default-300'
+                              }`}
+                            />
+                          );
+                        })}
                     </div>
                   ) : (
                     <Icon icon='lucide:layout-grid' size={48} className='text-default-300' />
                   )}
                 </div>
-
-                {/* Status badge */}
-                {/* <div className='absolute top-2 right-2'>
-                  <Badge color={board.activeDevices > 0 ? 'success' : 'default'} variant='flat'>
-                    {board.activeDevices > 0 ? 'Active' : 'Inactive'}
-                  </Badge>
-                </div> */}
               </div>
 
               <div className='p-4'>
                 <h2 className='text-xl font-semibold mb-1'>{board.name}</h2>
                 <p className='text-default-500 text-small mb-3'>{board.description}</p>
-
-                {/* <div className='flex flex-wrap gap-1 mb-3'>
-                  {board.tags.map((tag) => (
-                    <Badge key={tag} variant='flat' size='sm' className='capitalize'>
-                      {tag}
-                    </Badge>
-                  ))}
-                </div> */}
-
                 <div className='flex justify-between items-center'>
                   <div className='flex items-center gap-1'>
                     <Icon icon='lucide:cpu' size={16} className='text-default-500' />

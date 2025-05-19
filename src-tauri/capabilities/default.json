@@ -10,6 +10,7 @@
     "opener:default",
     "stronghold:default",
     "fs:default",
-    "store:default"
+    "store:default",
+    "fs:default"
   ]
 }
