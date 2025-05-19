@@ -35,11 +35,8 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   const total = rows * columns;
   const initCard = useBoardStore((state) => state.initCard);
   const cards = useBoardStore((state) => state.cards);
-  const boards = useBoardStore((state) => state.boards);
   const loading = useBoardStore((state) => state.jsonLoading);
-  const jsonError = useBoardStore((state) => state.jsonError);
   const pushboard = useBoardStore((state) => state.pushBoards);
-  const fetchGitLabData = useBoardStore((s) => s.fetchGitLabData);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -48,7 +45,7 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
     // to prevent reRender when ReactMode.Strict enabled
     if (Object.keys(cards).length > 0) return;
     for (let index = 0; index < total; index++) {
-      const initialCard: CardPropreties = { id: nanoid() };
+      const initialCard: CardPropreties = { id: nanoid(), onBoardPosition: index };
       initCard(initialCard.id, initialCard);
     }
   }, []);
@@ -84,7 +81,6 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
               <SelectItem key={day.key}>{day.label}</SelectItem>
             ))}
           </Select>
-          <Button onPress={fetchGitLabData}>Refresh data</Button>
           <Button onPress={onOpen} color='primary' startContent={<Icon icon='lucide:plus' />}>
             Save Board
           </Button>
@@ -132,9 +128,15 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
         </div>
       )}
       <div className={`grid gap-4 p-4 flex-1 min-h-0 dark:bg-background grid-cols-5`}>
-        {Object.keys(cards).map((id) => (
-          <DeviceCard key={id} id={id}></DeviceCard>
-        ))}
+        {Object.values(cards)
+          .sort((a, b) => b.onBoardPosition - a.onBoardPosition)
+          .map((cards) => (
+            <DeviceCard
+              key={cards.id}
+              id={cards.id}
+              onBoardPosition={cards.onBoardPosition}
+            ></DeviceCard>
+          ))}
       </div>
     </div>
   );

@@ -3,7 +3,6 @@ import { CardPropreties, useBoardStore } from '../utils/board-store';
 import { Icon } from '@iconify/react';
 import { CARD_TYPE_ARRAY } from '../utils/global-variable';
 import { CardType } from '../utils/global-variable';
-import React from 'react';
 
 export function ChooseCard({ id }: CardPropreties) {
   const useUpdateCard = useBoardStore((state) => state.updateCard);

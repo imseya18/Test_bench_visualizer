@@ -7,6 +7,7 @@ import { resourceDir } from '@tauri-apps/api/path';
 import { load } from '@tauri-apps/plugin-store';
 export type CardPropreties = {
   id: string;
+  onBoardPosition: number;
   type?: CardType;
   status?: CardStatus;
   completedTests?: number;

@@ -1,18 +1,23 @@
-import { Card, CardBody, CardFooter, Tooltip, Divider, Spinner } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  Divider,
+  Spinner,
+  Dropdown,
+  DropdownTrigger,
+  Button,
+  DropdownMenu,
+  DropdownItem,
+} from '@heroui/react';
 import { Icon } from '@iconify/react';
-import { CardPropreties } from '../utils/board-store';
-import { useBoardStore } from '../utils/board-store';
+import { CardPropreties, useBoardStore } from '../utils/board-store';
 import { useNavigate } from 'react-router-dom';
 import { ChooseCard } from './choose-card';
 import { CardProgressBar } from './card-progress-bar';
-import {
-  getSuccessfulJobTypeSize,
-  getJobTypeSize,
-  getStatusColor,
-  getJobTypeStatus,
-} from '../utils/job-utilities';
-
-import { PipelineJobsResponse } from '../bindings/PipelineJobsResponse';
+import { getStatusColor, getJobTypeStatus } from '../utils/job-utilities';
+import { CARD_TYPE_ARRAY } from '../utils/global-variable';
+import { CardType } from '../utils/global-variable';
 import { Skeleton } from '@heroui/skeleton';
 // function getPipelineStatusByCard(pipeline: PipelineJobsResponse) {
 //   const successJob = getSuccessfulJobTypeSize(pipeline);
@@ -20,11 +25,15 @@ import { Skeleton } from '@heroui/skeleton';
 
 //   return successJob === totalJoblen ? 'success' : 'failed';
 // }
-export function DeviceCard({ id }: CardPropreties) {
+export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
   const useGetCard = useBoardStore((state) => state.getCard);
   const gitLabData = useBoardStore((State) => State.gitLabData);
   const card = useGetCard(id);
   const navigate = useNavigate();
+  const useUpdateCard = useBoardStore((state) => state.updateCard);
+  const updateCard = (patch: Partial<CardPropreties>) => {
+    useUpdateCard(id, patch);
+  };
   if (!card) return;
 
   const { type } = card;
@@ -43,7 +52,7 @@ export function DeviceCard({ id }: CardPropreties) {
   };
 
   if (!type) {
-    return <ChooseCard id={id} />;
+    return <ChooseCard id={id} onBoardPosition={onBoardPosition} />;
   }
 
   if (isLoading && Object.keys(gitLabData).length === 0) {
@@ -64,7 +73,7 @@ export function DeviceCard({ id }: CardPropreties) {
     return <div className='flex justify-center items-center'>no pipeline found for {type}</div>;
   }
 
-  const status = getJobTypeStatus(lastestPipeline);
+  const status = getJobTypeStatus(lastestPipeline, ['build', 'test', 'test_offline']);
   const borederColor = getStatusColor(status);
   return (
     <Card
@@ -78,6 +87,24 @@ export function DeviceCard({ id }: CardPropreties) {
           {/* <Badge color={status === 'RUNNING' ? 'success' : 'default'} variant='flat' size='sm'>
             {status}
           </Badge> */}
+          <Dropdown>
+            <DropdownTrigger>
+              <Button
+                variant='light'
+                color='default'
+                isIconOnly
+                startContent={<Icon icon='lucide:arrow-down' />}
+              ></Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              aria-label='Types de composants'
+              onAction={(key) => updateCard({ type: key as CardType })}
+            >
+              {CARD_TYPE_ARRAY.map((type) => (
+                <DropdownItem key={type}>{type}</DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
         </div>
 
         <Divider className='my-1' />
