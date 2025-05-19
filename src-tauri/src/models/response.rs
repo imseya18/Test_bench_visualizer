@@ -36,6 +36,9 @@ pub struct ByCardsResponse {
     #[serde(rename = "stm32mp15-disco-welma")]
     #[ts(type = "Record<string, PipelineJobsResponse>")]
     stm32mp15_disco_welma: HashMap<u64, PipelineJobsResponse>,
+    #[serde(rename = "stm32mp25-disco-welma")]
+    #[ts(type = "Record<string, PipelineJobsResponse>")]
+    stm32mp25_disco_welma: HashMap<u64, PipelineJobsResponse>,
     #[serde(rename = "tungsten-700-smarc-welma")]
     #[ts(type = "Record<string, PipelineJobsResponse>")]
     tungsten_700_smarc_welma: HashMap<u64, PipelineJobsResponse>,
@@ -68,6 +71,7 @@ impl ByCardsResponse {
             "qemuarm-welma" => &mut self.qemuarm_welma,
             "raspberrypi4-64-welma" => &mut self.raspberrypi4_64_welma,
             "stm32mp15-disco-welma" => &mut self.stm32mp15_disco_welma,
+            "stm32mp25-disco-welma" => &mut self.stm32mp25_disco_welma,
             "tungsten-700-smarc-welma" => &mut self.tungsten_700_smarc_welma,
             "sm2s-imx93-mbep5" => &mut self.sm2s_imx93_mbep5,
             "sm2s-imx8plus-mbep5" => &mut self.sm2s_imx8plus_mbep5,
