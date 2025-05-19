@@ -39,6 +39,7 @@ type GitLabSlice = {
   error: string | undefined;
   fetchGitLabData: () => Promise<void>;
   getCardsPipeline(cardType: string): PipelineJobsResponse[];
+  getCachedGitLabData: () => Promise<void>;
 };
 
 type JsonSlice = {
@@ -76,8 +77,12 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
     set({ isLoading: true, error: undefined });
     try {
       console.log('start api call');
+      const dir = await resourceDir();
+      const store = await load(dir + '/json/store.json', { autoSave: true });
       const result = await invoke<ByCardsResponse>('test_api_call');
       set({ gitLabData: result });
+      await store.set('gitLabData', result);
+      await store.save();
     } catch (error: any) {
       console.error(error);
       set({ error: error.message });
@@ -87,6 +92,13 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
     }
   },
 
+  getCachedGitLabData: async () => {
+    const dir = await resourceDir();
+    const store = await load(dir + '/json/store.json', { autoSave: true });
+    const cachedApiCall = (await store.get<ByCardsResponse>('gitLabData')) ?? {};
+    console.log('cached API data:', cachedApiCall);
+    set({ gitLabData: cachedApiCall });
+  },
   getCardsPipeline: (cardType): PipelineJobsResponse[] => {
     const data = get().gitLabData[cardType] ?? {};
     return Object.values(data);

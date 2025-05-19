@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { Card, CardBody, CardFooter, Badge, Button, Tooltip, Spinner } from '@heroui/react';
+import { Card, CardBody, CardFooter, Button, Tooltip, Spinner } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useBoardStore } from '../utils/board-store';
 import { CardPropreties } from '../utils/board-store';
@@ -25,9 +24,6 @@ export function Dashboard() {
   const loading = useBoardStore((state) => state.jsonLoading);
   const navigate = useNavigate();
   const setCards = useBoardStore((state) => state.setCards);
-  useEffect(() => {
-    console.log(boards);
-  }, [boards]);
 
   if (loading) {
     return <Spinner label='Fetching Data...'></Spinner>;

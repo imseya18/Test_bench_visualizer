@@ -45,7 +45,7 @@ interface PipelineDetailsProps {
   onClose: () => void;
 }
 
-export function PipelineDetails({ deviceId, deviceName, isOpen, onClose }: PipelineDetailsProps) {
+export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
   const pipelinesRecord = useBoardStore((state) => state.gitLabData[deviceName]);
 
   const isLoading = useBoardStore((state) => state.isLoading);
@@ -56,10 +56,6 @@ export function PipelineDetails({ deviceId, deviceName, isOpen, onClose }: Pipel
         : Object.values(pipelinesRecord),
     [isLoading, pipelinesRecord],
   );
-
-  useEffect(() => {
-    console.log(pipelines);
-  }, [pipelines]);
 
   if (isLoading) {
     return (

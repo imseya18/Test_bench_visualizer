@@ -52,7 +52,7 @@ async fn test_api_call(
         .await
         .map_err(|e| e.to_string())?;
     //todo Add Number of days variable calls and pipeline name.
-    let pipelines = get_project_pipelines(&ProjectId::Ci, &client, 7, "config/projects-kirkstone".to_string())
+    let pipelines = get_project_pipelines(&ProjectId::Ci, &client, 7, "".to_string())
         .await
         .map_err(|e| e.to_string())?;
     let result = build_front_response(pipelines, &client).await;

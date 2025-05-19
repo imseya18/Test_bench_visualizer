@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import './App.css';
 
 import { Sidebar } from './component/side-bar';
@@ -12,11 +12,12 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 function App() {
   const fetchGitLabData = useBoardStore((s) => s.fetchGitLabData);
   const fetchBoards = useBoardStore((s) => s.fetchBoards);
-
+  const getCachedGitLabData = useBoardStore((s) => s.getCachedGitLabData);
   useEffect(() => {
+    getCachedGitLabData();
     fetchGitLabData();
     fetchBoards();
-  }, [fetchGitLabData, fetchBoards]);
+  }, [fetchGitLabData, fetchBoards, getCachedGitLabData]);
 
   return (
     <MemoryRouter>
