@@ -11,6 +11,12 @@ pub enum JobType {
     Unknown,
 }
 
+impl JobType {
+    pub fn is_test(&self) -> bool {
+        matches!(self, JobType::Test | JobType::TestOffline)
+    }
+}
+
 impl FromStr for JobType {
     // As our from_str implementation doesn't return an error in any case we can use the Infallible enum
     type Err = Infallible;
@@ -39,13 +45,3 @@ impl fmt::Display for ProjectId {
         f.write_str(s)
     }
 }
-
-// pub fn get_job_type(type_of_job: &str) -> JobType {
-//     match type_of_job {
-//         "build" => JobType::Build,
-//         "test-offline" => JobType::TestOffline,
-//         "test" => JobType::Test,
-//         "cvescan" => JobType::CveScan,
-//         _ => JobType::Unknown,
-//     }
-// }

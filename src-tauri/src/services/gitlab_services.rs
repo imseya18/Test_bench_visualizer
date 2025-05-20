@@ -1,27 +1,14 @@
 use super::utils::extract_card_and_job_type;
-use crate::models::api_struct::{Job, Pipeline};
+use crate::models::api_struct::{Job, Pipeline, TestReport};
 use crate::models::enums::ProjectId;
 use crate::models::response::ByCardsResponse;
 use chrono::{Days, Utc};
-use gitlab::api::projects::pipelines::{PipelineJobs, Pipelines};
+use gitlab::api::projects::pipelines::{PipelineTestReportSummary ,PipelineJobs, Pipelines};
 use gitlab::api::{paged, AsyncQuery, Pagination};
 use gitlab::AsyncGitlab;
 
-// pub fn get_pipelines_jobs_routine(
-//     project_id: ProjectId,
-//     client: &Gitlab,
-// ) -> Result<Vec<Vec<Job>>, Box<dyn std::error::Error>> {
-//     let mut jobs: Vec<Vec<Job>> = vec![];
-//     let pipelines = get_project_pipelines(&project_id, client)?;
+pub type AsyncResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync + 'static>>;
 
-//     for pipeline in pipelines {
-//         match get_pipeline_jobs(&project_id, pipeline.id, client) {
-//             Ok(job) => jobs.push(job),
-//             Err(_) => (),
-//         }
-//     }
-//     Ok(jobs)
-// }
 
 pub async fn get_project_pipelines(
     project_id: &ProjectId,
@@ -45,7 +32,7 @@ pub async fn get_pipeline_jobs(
     project_id: &ProjectId,
     pipelines_id: u64,
     client: &AsyncGitlab,
-) -> Result<Vec<Job>, Box<dyn std::error::Error>> {
+) -> AsyncResult<Vec<Job>> {
     let endpoint = PipelineJobs::builder()
         .project(project_id.to_string())
         .pipeline(pipelines_id)
@@ -54,22 +41,49 @@ pub async fn get_pipeline_jobs(
     Ok(jobs)
 }
 
+pub async fn get_pipeline_test_summary(
+    project_id: &ProjectId,
+    pipelines_id: u64,
+    client: &AsyncGitlab,
+) -> AsyncResult<TestReport> {
+    let endpoint = PipelineTestReportSummary::builder()
+        .project(project_id.to_string())
+        .pipeline(pipelines_id)
+        .build()?;
+
+    let test_report: TestReport = endpoint.query_async(client).await?;
+    Ok(test_report)
+}
+
+
 pub async fn build_front_response(
     pipelines: Vec<Pipeline>,
     client: &AsyncGitlab,
-) -> Result<ByCardsResponse, Box<dyn std::error::Error>> {
+) -> AsyncResult<ByCardsResponse> {
     let mut response = ByCardsResponse::default();
-
     for pipeline in pipelines {
         match get_pipeline_jobs(&ProjectId::Ci, pipeline.id, client).await {
             Ok(jobs) => {
-                for job in jobs {
-                    if let Some((card_type, job_type)) = extract_card_and_job_type(&job) {
+                let mut tests_report_res =
+                    get_pipeline_test_summary(&ProjectId::Ci, pipeline.id, client).await;
+                for mut job in jobs {
+                    if let Some((card_type, job_type)) = extract_card_and_job_type(&job.name) {
+                        if job_type.is_test() {
+                            if let Ok(test_report) = tests_report_res.as_mut() {
+                                for (index, test) in test_report.test_suites.iter().enumerate() {
+                                    if test.name == job.name {
+                                        let suite = test_report.test_suites.remove(index);
+                                        job.tests_report = Some(suite);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                         response.insert_job(&card_type, job_type, &pipeline, job);
                     }
                 }
             }
-            Err(_) => (),
+            Err(_) => println!("error job call on pipeline: {:?}", pipeline.id),
         };
     }
     Ok(response)
