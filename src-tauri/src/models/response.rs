@@ -88,6 +88,7 @@ impl ByCardsResponse {
             PipelineJobsResponse::new(
                 pipeline.id,
                 job.commit.title.clone(),
+                pipeline.pipeline_ref.clone(),
                 pipeline.status.clone(),
                 pipeline.project_id,
                 pipeline.created_at.clone(),
@@ -104,6 +105,8 @@ impl ByCardsResponse {
 struct PipelineJobsResponse {
     id: u64,
     title: String,
+    #[serde(rename = "ref")]
+    pipeline_ref: String,
     status: String,
     project_id: u64,
     created_at: String,
@@ -119,6 +122,7 @@ impl PipelineJobsResponse {
     pub fn new(
         id: u64,
         title: String,
+        pipeline_ref: String,
         status: String,
         project_id: u64,
         created_at: String,
@@ -127,6 +131,7 @@ impl PipelineJobsResponse {
         PipelineJobsResponse {
             id,
             title,
+            pipeline_ref,
             status,
             project_id,
             created_at,

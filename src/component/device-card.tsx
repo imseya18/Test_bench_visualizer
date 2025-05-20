@@ -96,7 +96,7 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
       isPressable
       onPress={() => openPipelineDetails(id, type)}
     >
-      <CardBody className='p-3 gap-2'>
+      <CardBody className='p-2 gap-1'>
         <div className='flex justify-between items-center'>
           <h3 className='text-sm font-semibold'>{type}</h3>
           <Dropdown>
@@ -119,7 +119,7 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
           </Dropdown>
         </div>
 
-        <Divider className='my-1' />
+        <Divider className='mg-0' />
         {/* Build Result */}
         <CardProgressBar name={'build'} pipelineJobs={lastestPipeline} />
         {/* test Result */}
@@ -130,7 +130,7 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
       <CardFooter className='p-2 border-t border-content2 justify-between'>
         <div className='flex items-center'>
           <Icon icon='lucide:cpu' className='text-default-400 mr-1' size={14} />
-          <span className='text-tiny text-default-400'>{status}</span>
+          <span className='text-tiny text-default-400'>{lastestPipeline.ref}</span>
         </div>
       </CardFooter>
     </Card>

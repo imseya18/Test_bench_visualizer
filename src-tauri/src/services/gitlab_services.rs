@@ -35,6 +35,9 @@ pub async fn get_project_pipelines(
         .updated_after(Utc::now().checked_sub_days(Days::new(since_day)).unwrap())
         .build()?;
     let pipelines: Vec<Pipeline> = paged(endpoint, Pagination::All).query_async(client).await?;
+    for pipeline in &pipelines {
+        println!("ref de pipeline: {:?}", pipeline.pipeline_ref);
+    }
     Ok(pipelines)
 }
 

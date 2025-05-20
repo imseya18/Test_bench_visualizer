@@ -3,6 +3,7 @@
 export type Pipeline = {
   id: bigint;
   status: string;
+  ref: string;
   project_id: bigint;
   created_at: string;
   updated_at: string;

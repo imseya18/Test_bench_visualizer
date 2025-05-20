@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   Card,
   CardBody,
@@ -8,6 +8,8 @@ import {
   AccordionItem,
   Tooltip,
   Spinner,
+  Select,
+  SelectItem,
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -19,6 +21,13 @@ import {
   getJobTypeSize,
   getStatusColor,
 } from '../utils/job-utilities';
+
+export const day = [
+  { key: '1', label: 'Today' },
+  { key: '7', label: 'Last 7 Days' },
+  { key: '30', label: 'Last 30 Days' },
+  { key: '180', label: 'Last 180 Days' },
+];
 //Wrapper needed to path component's props to our navigation
 export function PipelineDetailsWrapper() {
   const { state } = useLocation() as {
@@ -72,11 +81,11 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
     );
   }
 
-  const formatDuration = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}m ${remainingSeconds}s`;
-  };
+  //   const formatDuration = (seconds: number) => {
+  //     const minutes = Math.floor(seconds / 60);
+  //     const remainingSeconds = seconds % 60;
+  //     return `${minutes}m ${remainingSeconds}s`;
+  //   };
 
   return pipelines ? (
     <div className='fixed inset-0 bg-content1 z-50 overflow-auto'>
@@ -95,6 +104,12 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
               <p className='text-default-500'>Pipeline History</p>
             </div>
           </div>
+          {/* Periode selecteur */}
+          {/* <Select className='max-w-xs' label='Select a period'>
+            {day.map((day) => (
+              <SelectItem key={day.key}>{day.label}</SelectItem>
+            ))}
+          </Select> */}
           <div className='flex items-center gap-3'>
             <Button color='primary' startContent={<Icon icon='lucide:play' />}>
               Run Pipeline

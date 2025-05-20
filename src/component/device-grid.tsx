@@ -15,8 +15,6 @@ import {
   Button,
   useDisclosure,
   Textarea,
-  Select,
-  SelectItem,
   Input,
 } from '@heroui/react';
 interface DeviceGridProperties {
@@ -75,12 +73,7 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   return (
     <div className='flex-1 flex min-h-0 flex-col'>
       {!loading && (
-        <div className='flex justify-between items-center pl-3 pr-3'>
-          <Select className='max-w-xs' label='Select a period'>
-            {day.map((day) => (
-              <SelectItem key={day.key}>{day.label}</SelectItem>
-            ))}
-          </Select>
+        <div className='flex justify-between items-start pl-3 pr-3'>
           <Button onPress={onOpen} color='primary' startContent={<Icon icon='lucide:plus' />}>
             Save Board
           </Button>
