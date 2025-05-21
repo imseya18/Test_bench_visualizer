@@ -13,11 +13,11 @@ pub async fn get_project_pipelines(
     project_id: &ProjectId,
     client: &AsyncGitlab,
     since_day: u64,
-    pipeline_name: String,
+    branch_name: String,
 ) -> Result<Vec<Pipeline>, Box<dyn std::error::Error>> {
     let endpoint = Pipelines::builder()
         .project(project_id.to_string())
-        .ref_(pipeline_name)
+        .ref_(branch_name)
         .updated_after(Utc::now().checked_sub_days(Days::new(since_day)).unwrap())
         .build()?;
     let pipelines: Vec<Pipeline> = paged(endpoint, Pagination::All).query_async(client).await?;

@@ -15,7 +15,8 @@ function App() {
   const getCachedGitLabData = useBoardStore((s) => s.getCachedGitLabData);
   useEffect(() => {
     getCachedGitLabData();
-    fetchGitLabData();
+    fetchGitLabData('config/projects-scarthgap');
+    fetchGitLabData('config/projects-kirkstone');
     fetchBoards();
   }, [fetchGitLabData, fetchBoards, getCachedGitLabData]);
 

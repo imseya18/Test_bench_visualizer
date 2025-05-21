@@ -5,6 +5,8 @@ import { invoke } from '@tauri-apps/api/core';
 import { PipelineJobsResponse } from '../bindings/PipelineJobsResponse';
 import { resourceDir } from '@tauri-apps/api/path';
 import { load } from '@tauri-apps/plugin-store';
+import { BranchName } from './global-variable';
+
 export type CardPropreties = {
   id: string;
   onBoardPosition: number;
@@ -34,14 +36,17 @@ type CardSlice = {
 };
 
 type GitLabSlice = {
+  gitLabCache: Record<BranchName, ByCardsResponse>;
   gitLabData: ByCardsResponse;
   selectedBranch: string;
   isLoading: boolean;
   error: string | undefined;
-  fetchGitLabData: () => Promise<void>;
+  fetchGitLabData: (branchName: BranchName | undefined) => Promise<void>;
   getCardsPipeline(cardType: string): PipelineJobsResponse[];
   getCachedGitLabData: () => Promise<void>;
   setSelectedBranch(selectedBranch: string): void;
+  changeSelectedBranch(selectedBranch: string): void;
+  setGitLabData(gitLabData: ByCardsResponse): void;
 };
 
 type JsonSlice = {
@@ -72,20 +77,27 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
   setCards: (cards) => set({ cards }),
   // GitLabSlice
   selectedBranch: '',
+  gitLabCache: {},
   gitLabData: {},
   isLoading: false,
   error: undefined,
 
   //todo add branche on parametre to call API on specifique Branch and if blank call for all branch.
-  fetchGitLabData: async () => {
+  fetchGitLabData: async (branchName: string = '') => {
     set({ isLoading: true, error: undefined });
     try {
       console.log('start api call');
       const dir = await resourceDir();
       const store = await load(dir + '/json/store.json', { autoSave: true });
-      const result = await invoke<ByCardsResponse>('test_api_call');
-      set({ gitLabData: result });
-      await store.set('gitLabData', result);
+      const result = await invoke<ByCardsResponse>('test_api_call', { branch_name: branchName });
+      set((state) => ({
+        gitLabCache: {
+          ...state.gitLabCache,
+          [branchName]: result,
+        },
+      }));
+      get().setGitLabData(result);
+      await store.set('gitLabData', get().gitLabCache);
       await store.save();
     } catch (error: unknown) {
       console.error(error);
@@ -112,6 +124,11 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
     return Object.values(data);
   },
   setSelectedBranch: (selectedBranch) => set({ selectedBranch }),
+  setGitLabData: (gitLabData) => set({ gitLabData }),
+  changeSelectedBranch: (selectedBranch) => {
+    get().setSelectedBranch(selectedBranch);
+    get().setGitLabData(get().gitLabCache[selectedBranch] ?? {});
+  },
   //Json Slice
 
   boards: {},

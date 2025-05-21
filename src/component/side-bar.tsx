@@ -11,13 +11,13 @@ import { Icon } from '@iconify/react';
 import { useNavigate } from 'react-router-dom';
 import { useBoardStore } from '../utils/board-store';
 import { BRANCH_NAME_ARRAY } from '../utils/global-variable';
-import { useEffect } from 'react';
+
 export function Sidebar() {
   const navigate = useNavigate();
   const fetchGitLabData = useBoardStore((state) => state.fetchGitLabData);
   const apiLoading = useBoardStore((state) => state.isLoading);
   const selectedBranch = useBoardStore((state) => state.selectedBranch);
-  const setSelectedBranch = useBoardStore((state) => state.setSelectedBranch);
+  const setSelectedBranch = useBoardStore((state) => state.changeSelectedBranch);
   return (
     <div className='h-screen w-16 bg-content2 flex flex-col items-center py-4 border-r border-content3'>
       <Tooltip content='Dashboard' placement='right'>
@@ -117,7 +117,7 @@ export function Sidebar() {
           <Button
             isIconOnly
             isLoading={apiLoading ? true : undefined}
-            onPress={fetchGitLabData}
+            onPress={() => fetchGitLabData('')}
             className='mb-4'
             variant='light'
           >

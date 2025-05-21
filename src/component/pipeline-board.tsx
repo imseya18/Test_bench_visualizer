@@ -8,8 +8,6 @@ import {
   AccordionItem,
   Tooltip,
   Spinner,
-  Select,
-  SelectItem,
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useLocation, useNavigate } from 'react-router-dom';

@@ -39,6 +39,7 @@ fn get_api_key(state: tauri::State<'_, RwLock<AppState>>) -> Result<String, Stri
 
 #[tauri::command(rename_all = "snake_case")]
 async fn test_api_call(
+    branch_name: String,
     state: tauri::State<'_, RwLock<AppState>>,
 ) -> Result<ByCardsResponse, String> {
     /* I use a closur to drop the RwLock before the .await cause Rwlock isn't send*/
@@ -52,7 +53,7 @@ async fn test_api_call(
         .await
         .map_err(|e| e.to_string())?;
     //todo Add Number of days variable calls and pipeline name. Actually hard coded
-    let pipelines = get_project_pipelines(&ProjectId::Ci, &client, 7, "".to_string())
+    let pipelines = get_project_pipelines(&ProjectId::Ci, &client, 7, branch_name)
         .await
         .map_err(|e| e.to_string())?;
     let result = build_front_response(pipelines, &client).await;
