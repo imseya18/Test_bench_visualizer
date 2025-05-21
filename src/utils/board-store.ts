@@ -76,7 +76,7 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
   getCard: (id) => get().cards[id],
   setCards: (cards) => set({ cards }),
   // GitLabSlice
-  selectedBranch: '',
+  selectedBranch: 'config/projects-kirkstone',
   gitLabCache: {},
   gitLabData: {},
   isLoading: false,

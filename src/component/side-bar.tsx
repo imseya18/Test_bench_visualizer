@@ -80,6 +80,8 @@ export function Sidebar() {
           selectionMode='single'
           onSelectionChange={(selectedKeys) => {
             const [key] = [...selectedKeys];
+            //? key is undefined when i choose the already selected key so i leave early if this is the case
+            if (!key) return;
             setSelectedBranch(String(key));
           }}
         >
