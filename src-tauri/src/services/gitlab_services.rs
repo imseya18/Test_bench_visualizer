@@ -1,14 +1,13 @@
 use super::utils::extract_card_and_job_type;
-use crate::models::api_struct::{Job, Pipeline, TestReport};
+use crate::models::api_struct::{Job, Pipeline, TestReport, TestSuite};
 use crate::models::enums::ProjectId;
 use crate::models::response::ByCardsResponse;
 use chrono::{Days, Utc};
-use gitlab::api::projects::pipelines::{PipelineTestReportSummary ,PipelineJobs, Pipelines};
+use gitlab::api::projects::pipelines::{PipelineJobs, PipelineTestReportSummary, Pipelines};
 use gitlab::api::{paged, AsyncQuery, Pagination};
 use gitlab::AsyncGitlab;
-
+use std::collections::HashMap;
 pub type AsyncResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync + 'static>>;
-
 
 pub async fn get_project_pipelines(
     project_id: &ProjectId,
@@ -55,36 +54,39 @@ pub async fn get_pipeline_test_summary(
     Ok(test_report)
 }
 
-
 pub async fn build_front_response(
     pipelines: Vec<Pipeline>,
     client: &AsyncGitlab,
 ) -> AsyncResult<ByCardsResponse> {
     let mut response = ByCardsResponse::default();
     for pipeline in pipelines {
-        match get_pipeline_jobs(&ProjectId::Ci, pipeline.id, client).await {
-            Ok(jobs) => {
-                let mut tests_report_res =
-                    get_pipeline_test_summary(&ProjectId::Ci, pipeline.id, client).await;
-                for mut job in jobs {
-                    if let Some((card_type, job_type)) = extract_card_and_job_type(&job.name) {
-                        if job_type.is_test() {
-                            if let Ok(test_report) = tests_report_res.as_mut() {
-                                for (index, test) in test_report.test_suites.iter().enumerate() {
-                                    if test.name == job.name {
-                                        let suite = test_report.test_suites.remove(index);
-                                        job.tests_report = Some(suite);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        response.insert_job(&card_type, job_type, &pipeline, job);
+        let jobs = match get_pipeline_jobs(&ProjectId::Ci, pipeline.id, client).await {
+            Ok(j) => j,
+            Err(e) => {
+                eprintln!("error job call on pipeline {}: {:?}", pipeline.id, e);
+                continue;
+            }
+        };
+        let mut report_map: HashMap<String, TestSuite> =
+            match get_pipeline_test_summary(&ProjectId::Ci, pipeline.id, client).await {
+                Ok(report) => report
+                    .test_suites
+                    .into_iter()
+                    .map(|test| (test.name.clone(), test))
+                    .collect(),
+                Err(_) => HashMap::new(),
+            };
+
+        for mut job in jobs {
+            if let Some((card_type, job_type)) = extract_card_and_job_type(&job.name) {
+                if job_type.is_test() {
+                    if let Some(test_suite) = report_map.remove(&job.name) {
+                        job.tests_report = Some(test_suite);
                     }
                 }
+                response.insert_job(&card_type, job_type, &pipeline, job);
             }
-            Err(_) => println!("error job call on pipeline: {:?}", pipeline.id),
-        };
+        }
     }
     Ok(response)
 }

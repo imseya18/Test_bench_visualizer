@@ -51,7 +51,7 @@ async fn test_api_call(
         .build_async()
         .await
         .map_err(|e| e.to_string())?;
-    //todo Add Number of days variable calls and pipeline name.
+    //todo Add Number of days variable calls and pipeline name. Actually hard coded
     let pipelines = get_project_pipelines(&ProjectId::Ci, &client, 7, "".to_string())
         .await
         .map_err(|e| e.to_string())?;

@@ -1,4 +1,3 @@
-use crate::models::api_struct::Job;
 use crate::models::enums::JobType;
 
 pub fn extract_card_and_job_type(job_name: &String) -> Option<(String, JobType)> {
