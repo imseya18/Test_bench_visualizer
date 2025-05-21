@@ -15,5 +15,7 @@ export const CARD_TYPE_ARRAY = [
 ] as const;
 
 export const CARD_STATUS = ['RUNNING', 'IDLE', 'OFF'] as const;
+export const BRANCH_NAME_ARRAY = ['config/projects-scarthgap', 'config/projects-kirkstone'];
 export type CardType = (typeof CARD_TYPE_ARRAY)[number];
 export type CardStatus = (typeof CARD_STATUS)[number];
+export type BranchName = (typeof BRANCH_NAME_ARRAY)[number];

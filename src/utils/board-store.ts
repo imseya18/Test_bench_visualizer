@@ -35,11 +35,13 @@ type CardSlice = {
 
 type GitLabSlice = {
   gitLabData: ByCardsResponse;
+  selectedBranch: string;
   isLoading: boolean;
   error: string | undefined;
   fetchGitLabData: () => Promise<void>;
   getCardsPipeline(cardType: string): PipelineJobsResponse[];
   getCachedGitLabData: () => Promise<void>;
+  setSelectedBranch(selectedBranch: string): void;
 };
 
 type JsonSlice = {
@@ -69,10 +71,12 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
   getCard: (id) => get().cards[id],
   setCards: (cards) => set({ cards }),
   // GitLabSlice
+  selectedBranch: '',
   gitLabData: {},
   isLoading: false,
   error: undefined,
 
+  //todo add branche on parametre to call API on specifique Branch and if blank call for all branch.
   fetchGitLabData: async () => {
     set({ isLoading: true, error: undefined });
     try {
@@ -83,9 +87,13 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
       set({ gitLabData: result });
       await store.set('gitLabData', result);
       await store.save();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      set({ error: error.message });
+      if (error instanceof Error) {
+        set({ error: error.message });
+      } else {
+        set({ error: String(error) });
+      }
     } finally {
       set({ isLoading: false });
       console.log(get().gitLabData);
@@ -103,7 +111,7 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
     const data = get().gitLabData[cardType] ?? {};
     return Object.values(data);
   },
-
+  setSelectedBranch: (selectedBranch) => set({ selectedBranch }),
   //Json Slice
 
   boards: {},
@@ -117,9 +125,13 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
       const store = await load(dir + '/json/store.json', { autoSave: true });
       const data = (await store.get<Record<string, BoardProperties>>('Boards')) ?? {};
       set({ boards: data });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      set({ jsonError: error.message });
+      if (error instanceof Error) {
+        set({ jsonError: error.message });
+      } else {
+        set({ jsonError: String(error) });
+      }
     } finally {
       set({ jsonLoading: false });
     }
@@ -140,9 +152,13 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
       const store = await load(dir + '/json/store.json', { autoSave: true });
       await store.set('Boards', allBoards);
       await store.save();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      set({ jsonError: error.message });
+      if (error instanceof Error) {
+        set({ jsonError: error.message });
+      } else {
+        set({ jsonError: String(error) });
+      }
     } finally {
       set({ jsonLoading: false });
     }

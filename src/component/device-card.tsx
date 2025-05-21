@@ -129,7 +129,7 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
       </CardBody>
       <CardFooter className='p-2 border-t border-content2 justify-between'>
         <div className='flex items-center'>
-          <Icon icon='lucide:cpu' className='text-default-400 mr-1' size={14} />
+          <Icon icon='icon-park-outline:branch-two' className='text-default-400 mr-1' />
           <span className='text-tiny text-default-400'>{lastestPipeline.ref}</span>
         </div>
       </CardFooter>
