@@ -82,7 +82,6 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
   isLoading: false,
   error: undefined,
 
-  //todo add branche on parametre to call API on specifique Branch and if blank call for all branch.
   fetchGitLabData: async (branchName: string = '') => {
     set({ isLoading: true, error: undefined });
     try {
@@ -115,9 +114,11 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
   getCachedGitLabData: async () => {
     const dir = await resourceDir();
     const store = await load(dir + '/json/store.json', { autoSave: true });
-    const cachedApiCall = (await store.get<ByCardsResponse>('gitLabData')) ?? {};
+    const cachedApiCall =
+      (await store.get<Record<BranchName, ByCardsResponse>>('gitLabData')) ?? {};
     console.log('cached API data:', cachedApiCall);
-    set({ gitLabData: cachedApiCall });
+    set({ gitLabCache: cachedApiCall });
+    set({ gitLabData: get().gitLabCache[get().selectedBranch] ?? {} });
   },
   getCardsPipeline: (cardType): PipelineJobsResponse[] => {
     const data = get().gitLabData[cardType] ?? {};

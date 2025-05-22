@@ -11,6 +11,40 @@ export const getJobTypeSize = (
   const jobLen = keys.reduce((sum, type) => sum + pipeline[type].length, 0);
   return jobLen;
 };
+function normalizeTotal(count?: bigint): number {
+  if (count === undefined) return 0;
+  if (count == 0n) return 1;
+  return Number(count);
+}
+
+export const getJobTestTypeSize = (
+  pipeline: PipelineJobsResponse,
+  keys: JobKeys[] = jobKeys,
+): number => {
+  const jobLen = keys.reduce(
+    (sum, type) =>
+      sum +
+      pipeline[type].reduce((sum, job) => sum + normalizeTotal(job.tests_report?.total_count), 0),
+    0,
+  );
+  return jobLen;
+};
+
+export const getSuccessfulJobTestTypeSize = (
+  pipeline: PipelineJobsResponse,
+  keys: JobKeys[] = jobKeys,
+): number => {
+  let success = 0;
+  for (const type of keys) {
+    success += pipeline[type]
+      .filter((job) => job.status === 'success')
+      .reduce(
+        (sum, successfulJob) => sum + Number(successfulJob.tests_report?.success_count ?? 0),
+        0,
+      );
+  }
+  return success;
+};
 
 export const getSuccessfulJobTypeSize = (
   pipeline: PipelineJobsResponse,

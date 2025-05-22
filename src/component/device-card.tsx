@@ -121,11 +121,23 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
 
         <Divider className='mg-0' />
         {/* Build Result */}
-        <CardProgressBar name={'build'} pipelineJobs={lastestPipeline} />
+        <CardProgressBar
+          type={'build'}
+          pipelineJobs={lastestPipeline}
+          pipelineStatus={lastestPipeline.status}
+        />
         {/* test Result */}
-        <CardProgressBar name={'test'} pipelineJobs={lastestPipeline} />
+        <CardProgressBar
+          type={'test'}
+          pipelineJobs={lastestPipeline}
+          pipelineStatus={lastestPipeline.status}
+        />
         {/* test-offiline Result */}
-        <CardProgressBar name={'test_offline'} pipelineJobs={lastestPipeline} />
+        <CardProgressBar
+          type={'test_offline'}
+          pipelineJobs={lastestPipeline}
+          pipelineStatus={lastestPipeline.status}
+        />
       </CardBody>
       <CardFooter className='p-2 border-t border-content2 justify-between'>
         <div className='flex items-center'>
