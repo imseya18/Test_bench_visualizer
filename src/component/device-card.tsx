@@ -19,12 +19,7 @@ import { getStatusColor, getJobTypeStatus } from '../utils/job-utilities';
 import { CARD_TYPE_ARRAY } from '../utils/global-variable';
 import { CardType } from '../utils/global-variable';
 import { Skeleton } from '@heroui/skeleton';
-// function getPipelineStatusByCard(pipeline: PipelineJobsResponse) {
-//   const successJob = getSuccessfulJobTypeSize(pipeline);
-//   const totalJoblen = getJobTypeSize(pipeline);
 
-//   return successJob === totalJoblen ? 'success' : 'failed';
-// }
 export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
   const useGetCard = useBoardStore((state) => state.getCard);
   const gitLabData = useBoardStore((State) => State.gitLabData);
@@ -37,10 +32,8 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
   if (!card) return;
 
   const { type } = card;
-
   const pipelinesRecord = useBoardStore((state) => state.gitLabData[type as string]);
   const isLoading = useBoardStore((state) => state.isLoading);
-
   const openPipelineDetails = (deviceId: string, deviceName: string) => {
     navigate('/pipelines', {
       state: {
@@ -82,7 +75,10 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
         isPressable={false}
         className='  flex flex-col h-full border-gray-500 border-1 justify-center items-center'
       >
-        <div className='mb-5'>no pipeline found for {type}</div>
+        <div className='mb-5 w-full text-center'>
+          no pipeline found for
+          <br /> {type}
+        </div>
         <ChooseCard id={id} onBoardPosition={onBoardPosition} />
       </Card>
     );
@@ -142,7 +138,7 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
       <CardFooter className='p-2 border-t border-content2 justify-between'>
         <div className='flex items-center'>
           <Icon icon='icon-park-outline:branch-two' className='text-default-400 mr-1' />
-          <span className='text-tiny text-default-400'>{lastestPipeline.ref}</span>
+          <span className='text-tiny text-default-400'>{Number(lastestPipeline.id)}</span>
         </div>
       </CardFooter>
     </Card>

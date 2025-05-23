@@ -75,13 +75,15 @@ export const getJobTypeStatus = (
   return (status as JobStatus) || 'success';
 };
 
-export const getStatusColor = (status: JobStatus): string => {
+export const getStatusColor = (
+  status: JobStatus,
+): 'primary' | 'success' | 'danger' | 'warning' | 'default' => {
   const colors = {
     running: 'primary',
     completed: 'success',
     failed: 'danger',
     pending: 'warning',
     success: 'success',
-  };
-  return colors[status] || 'default';
+  } as const;
+  return colors[status] ?? 'default';
 };

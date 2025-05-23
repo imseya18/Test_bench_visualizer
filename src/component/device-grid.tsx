@@ -35,6 +35,7 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   const cards = useBoardStore((state) => state.cards);
   const loading = useBoardStore((state) => state.jsonLoading);
   const pushboard = useBoardStore((state) => state.pushBoards);
+  const selectedBranch = useBoardStore((state) => state.selectedBranch);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -49,8 +50,6 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   }, []);
 
   const handleSubmitNewBoard = () => {
-    console.log(name);
-    console.log(description);
     const deviceCount = Object.keys(cards).length;
     const activeDevices = Object.values(cards).reduce((acc, card) => acc + (card.type ? 1 : 0), 0);
 
@@ -73,10 +72,13 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   return (
     <div className='flex-1 flex min-h-0 flex-col'>
       {!loading && (
-        <div className='flex justify-between items-start pl-3 pr-3'>
-          <Button onPress={onOpen} color='primary' startContent={<Icon icon='lucide:plus' />}>
-            Save Board
-          </Button>
+        <div className='grid grid-cols-5 items-center pt-2'>
+          <h1 className='col-start-3 text-center font-bold text-xl'>{selectedBranch}</h1>
+          <div className='col-start-5 justify-self-end'>
+            <Button onPress={onOpen} color='primary' startContent={<Icon icon='lucide:plus' />}>
+              Save Board
+            </Button>
+          </div>
           <Modal
             isOpen={isOpen}
             placement='top-center'
@@ -120,7 +122,7 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
           </Modal>
         </div>
       )}
-      <div className={`grid gap-4 p-4 flex-1 min-h-0 dark:bg-background grid-cols-5`}>
+      <div className={`grid gap-4 p-3 flex-1 min-h-0 grid-cols-5 [grid-auto-rows:1fr]`}>
         {Object.values(cards)
           .sort((a, b) => b.onBoardPosition - a.onBoardPosition)
           .map((cards) => (

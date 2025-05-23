@@ -12,8 +12,6 @@ export type CardPropreties = {
   onBoardPosition: number;
   type?: CardType;
   status?: CardStatus;
-  completedTests?: number;
-  totalTests?: number;
 };
 
 export type BoardProperties = {

@@ -1,14 +1,5 @@
 import { useMemo } from 'react';
-import {
-  Card,
-  CardBody,
-  Badge,
-  Button,
-  Accordion,
-  AccordionItem,
-  Tooltip,
-  Spinner,
-} from '@heroui/react';
+import { Card, CardBody, Button, Accordion, AccordionItem, Tooltip, Spinner } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useBoardStore } from '../utils/board-store';
@@ -149,18 +140,9 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                         </div>
                       </div>
                       <div className='flex items-center gap-4'>
-                        <Badge
-                          color={
-                            isPipelineSuccess
-                              ? 'success'
-                              : getStatusColor(pipeline.status as JobStatus)
-                          }
-                          variant='solid'
-                        >
-                          {isPipelineSuccess
-                            ? 'Success'
-                            : pipeline.status.charAt(0).toUpperCase() + pipeline.status.slice(1)}
-                        </Badge>
+                        {isPipelineSuccess
+                          ? 'Success'
+                          : pipeline.status.charAt(0).toUpperCase() + pipeline.status.slice(1)}
                         <div className='text-small text-default-500'>
                           {successfulJobLen}/{totalJobLen} jobs
                         </div>
