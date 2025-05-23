@@ -67,7 +67,7 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
     );
   }
 
-  const pipeline = Object.values(pipelinesRecord);
+  const pipeline = Object.values(pipelinesRecord ?? {});
   const lastestPipeline = pipeline.at(-1);
   if (!lastestPipeline) {
     return (
@@ -83,7 +83,6 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
       </Card>
     );
   }
-
   const status = getJobTypeStatus(lastestPipeline, ['build', 'test', 'test_offline']);
   const borederColor = getStatusColor(status);
   return (
