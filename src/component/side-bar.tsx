@@ -119,7 +119,7 @@ export function Sidebar() {
           <Button
             isIconOnly
             isLoading={apiLoading ? true : undefined}
-            onPress={() => fetchGitLabData(selectedBranch)}
+            onPress={() => fetchGitLabData(selectedBranch, true)}
             className='mb-4'
             variant='light'
           >

@@ -6,7 +6,8 @@ import { PipelineJobsResponse } from '../bindings/PipelineJobsResponse';
 import { resourceDir } from '@tauri-apps/api/path';
 import { load } from '@tauri-apps/plugin-store';
 import { BranchName } from './global-variable';
-
+import { gitlabError, storeError } from './error';
+import { addToast } from '@heroui/react';
 export type CardPropreties = {
   id: string;
   onBoardPosition: number;
@@ -39,7 +40,7 @@ type GitLabSlice = {
   selectedBranch: string;
   isLoading: boolean;
   error: string | undefined;
-  fetchGitLabData: (branchName: BranchName | undefined) => Promise<void>;
+  fetchGitLabData: (branchName: BranchName | undefined, notification: boolean) => Promise<void>;
   getCardsPipeline(cardType: string): PipelineJobsResponse[];
   getCachedGitLabData: () => Promise<void>;
   setSelectedBranch(selectedBranch: string): void;
@@ -80,7 +81,7 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
   isLoading: false,
   error: undefined,
 
-  fetchGitLabData: async (branchName: string = '') => {
+  fetchGitLabData: async (branchName: string = '', notification: boolean = false) => {
     set({ isLoading: true, error: undefined });
     try {
       console.log('start api call');
@@ -96,13 +97,15 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
       get().setGitLabData(result);
       await store.set('gitLabData', get().gitLabCache);
       await store.save();
-    } catch (error: unknown) {
-      console.error(error);
-      if (error instanceof Error) {
-        set({ error: error.message });
-      } else {
-        set({ error: String(error) });
+      if (notification) {
+        addToast({
+          title: 'Data updated',
+          color: 'success',
+        });
       }
+    } catch (error: unknown) {
+      gitlabError(String(error));
+      set({ error: String(error) });
     } finally {
       set({ isLoading: false });
       console.log(get().gitLabData);
@@ -142,18 +145,12 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
       const data = (await store.get<Record<string, BoardProperties>>('Boards')) ?? {};
       set({ boards: data });
     } catch (error: unknown) {
-      console.error(error);
-      if (error instanceof Error) {
-        set({ jsonError: error.message });
-      } else {
-        set({ jsonError: String(error) });
-      }
+      storeError(String(error));
     } finally {
       set({ jsonLoading: false });
     }
   },
 
-  //todo change the Data to store on a form like Records<nameOfTheBoard, typeOfCard[]>
   pushBoards: async (board: BoardProperties) => {
     set({ jsonLoading: true, error: undefined });
     try {
@@ -168,6 +165,11 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
       const store = await load(dir + '/json/store.json', { autoSave: true });
       await store.set('Boards', allBoards);
       await store.save();
+      addToast({
+        title: 'Board saved successfully',
+        color: 'success',
+        timeout: 3000,
+      });
     } catch (error: unknown) {
       console.error(error);
       if (error instanceof Error) {
