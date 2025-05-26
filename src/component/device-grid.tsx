@@ -17,6 +17,7 @@ import {
   Textarea,
   Input,
 } from '@heroui/react';
+
 interface DeviceGridProperties {
   rows: number;
   columns: number;
@@ -63,7 +64,6 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
       lastUpdated: new Date(),
     };
     pushboard(newBoard);
-    // Reset the name and Description for the next save;
     setName('');
     setDescription('');
     onClose();

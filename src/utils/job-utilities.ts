@@ -36,12 +36,10 @@ export const getSuccessfulJobTestTypeSize = (
 ): number => {
   let success = 0;
   for (const type of keys) {
-    success += pipeline[type]
-      .filter((job) => job.status === 'success')
-      .reduce(
-        (sum, successfulJob) => sum + Number(successfulJob.tests_report?.success_count ?? 0),
-        0,
-      );
+    success += pipeline[type].reduce(
+      (sum, successfulJob) => sum + Number(successfulJob.tests_report?.success_count ?? 0),
+      0,
+    );
   }
   return success;
 };
