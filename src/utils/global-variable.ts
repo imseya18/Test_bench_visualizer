@@ -12,6 +12,7 @@ export const CARD_TYPE_ARRAY = [
   'stm32mp15-disco-welma',
   'stm32mp25-disco-welma',
   'tungsten-700-smarc-welma',
+  'no card',
 ] as const;
 
 export const CARD_STATUS = ['RUNNING', 'IDLE', 'OFF'] as const;

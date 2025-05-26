@@ -108,7 +108,7 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
               onAction={(key) => updateCard({ type: key as CardType })}
             >
               {CARD_TYPE_ARRAY.map((type) => (
-                <DropdownItem key={type}>{type}</DropdownItem>
+                <DropdownItem key={type === 'no card' ? '' : type}>{type}</DropdownItem>
               ))}
             </DropdownMenu>
           </Dropdown>

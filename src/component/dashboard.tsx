@@ -25,6 +25,11 @@ export function Dashboard() {
   const navigate = useNavigate();
   const setCards = useBoardStore((state) => state.setCards);
 
+  const goToSelectedBoards = (cards: Record<string, CardPropreties>) => {
+    setCards(cards);
+    navigate('/board');
+  };
+
   if (loading) {
     return <Spinner label='Fetching Data...'></Spinner>;
   }
@@ -32,15 +37,11 @@ export function Dashboard() {
     return (
       <div className='flex-1 flex flex-col items-center justify-center gap-4 w-fullscreen'>
         No Board Found
-        <Button onPress={() => navigate('/board')}>Create Board</Button>
+        <Button onPress={() => goToSelectedBoards({})}>Create Board</Button>
       </div>
     );
   }
 
-  const goToSelectedBoards = (cards: Record<string, CardPropreties>) => {
-    setCards(cards);
-    navigate('/board');
-  };
   return (
     <div className='p-4 flex-1 min-h-0'>
       <div className='flex justify-between items-center mb-6'>
