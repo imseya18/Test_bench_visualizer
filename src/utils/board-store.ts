@@ -40,7 +40,7 @@ type GitLabSlice = {
   selectedBranch: string;
   isLoading: boolean;
   error: string | undefined;
-  fetchGitLabData: (branchName: BranchName | undefined, notification: boolean) => Promise<void>;
+  fetchGitLabData: (branchName: BranchName | undefined, notification?: boolean) => Promise<void>;
   getCardsPipeline(cardType: string): PipelineJobsResponse[];
   getCachedGitLabData: () => Promise<void>;
   setSelectedBranch(selectedBranch: string): void;
@@ -54,6 +54,8 @@ type JsonSlice = {
   jsonError: string | undefined;
   fetchBoards: () => Promise<void>;
   pushBoards: (board: BoardProperties) => Promise<void>;
+  removeBoard: (boardName: string) => Promise<void>;
+  saveBoardToJson: () => Promise<void>;
 };
 
 export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, get) => ({
@@ -151,6 +153,14 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
     }
   },
 
+  saveBoardToJson: async () => {
+    const allBoards = get().boards;
+    const dir = await resourceDir();
+    const store = await load(dir + '/json/store.json', { autoSave: true });
+    await store.set('Boards', allBoards);
+    await store.save();
+  },
+
   pushBoards: async (board: BoardProperties) => {
     set({ jsonLoading: true, error: undefined });
     try {
@@ -160,11 +170,7 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
           [board.name]: board,
         },
       });
-      const allBoards = get().boards;
-      const dir = await resourceDir();
-      const store = await load(dir + '/json/store.json', { autoSave: true });
-      await store.set('Boards', allBoards);
-      await store.save();
+      get().saveBoardToJson();
       addToast({
         title: 'Board saved successfully',
         color: 'success',
@@ -180,5 +186,14 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
     } finally {
       set({ jsonLoading: false });
     }
+  },
+
+  removeBoard: async (boardName: string) => {
+    set((state) => {
+      const newBoard = { ...state.boards };
+      delete newBoard[boardName];
+      return { boards: newBoard };
+    });
+    get().saveBoardToJson();
   },
 }));

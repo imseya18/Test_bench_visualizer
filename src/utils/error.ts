@@ -4,7 +4,7 @@ export function gitlabError(error: string) {
   let errorMessage = String('');
 
   if (error.includes('401')) {
-    errorMessage = '401 unauthorized: change or set your token';
+    errorMessage = '401 unauthorized: change or set your API token';
   }
 
   addToast({
