@@ -4,8 +4,11 @@ import { Icon } from '@iconify/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useBoardStore } from '../utils/board-store';
 import {
+  checkUnexpectedCase,
   getJobPriority,
+  getStatusIcon,
   JobStatus,
+  typeIsTest,
   jobKeys,
   getSuccessfulJobTypeSize,
   getJobTypeSize,
@@ -179,43 +182,50 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                                     getJobPriority(a.status as JobStatus) -
                                     getJobPriority(b.status as JobStatus),
                                 )
-                                .map((job) => (
-                                  <div
-                                    key={job.id}
-                                    className='flex items-center justify-between p-3 rounded-medium bg-content2'
-                                  >
-                                    <div className='flex items-center gap-3'>
-                                      <Icon
-                                        icon={
-                                          job.status === 'running'
-                                            ? 'lucide:loader-2'
-                                            : job.status === 'success'
-                                            ? 'lucide:check'
-                                            : job.status === 'failed'
-                                            ? 'lucide:x'
-                                            : 'lucide:clock'
-                                        }
-                                        className={
-                                          job.status === 'running'
-                                            ? 'animate-spin'
-                                            : `text-${getStatusColor(job.status as JobStatus)}`
-                                        }
-                                        height='1.5em'
-                                      />
-                                      <div>
-                                        <div className='font-medium'>{job.name}</div>
-                                        {/* <div className="text-tiny text-default-500">
+                                .map((job) => {
+                                  const isTypeTest = typeIsTest(type);
+                                  const checkError =
+                                    job.status === 'failed' && isTypeTest
+                                      ? checkUnexpectedCase(job)
+                                      : '';
+                                  return (
+                                    <div
+                                      key={job.id}
+                                      className={`flex flex-col items-start justify-start p-3 rounded-medium bg-content2 ${
+                                        checkError && 'border-1 border-red-500'
+                                      }`}
+                                    >
+                                      <div className='flex items-center'>
+                                        <div className='flex items-center gap-3'>
+                                          <Icon
+                                            icon={getStatusIcon(job.status as JobStatus)}
+                                            className={
+                                              job.status === 'running'
+                                                ? 'animate-spin'
+                                                : `text-${getStatusColor(job.status as JobStatus)}`
+                                            }
+                                            height='1.5em'
+                                          />
+                                          <div>
+                                            <div className='font-medium'>{job.name}</div>
+                                            {/* <div className="text-tiny text-default-500">
                                         Duration: {formatDuration(job.duration)}
                                       </div> */}
-                                      </div>
-                                    </div>
-                                    <div className='flex items-center gap-2'>
-                                      <Tooltip content='View Logs'>
-                                        <Button isIconOnly variant='light' size='sm'>
-                                          <Icon icon='lucide:file-text' size={18} />
-                                        </Button>
-                                      </Tooltip>
-                                      <Tooltip content='Retry Job'>
+                                          </div>
+                                        </div>
+                                        <div className='flex items-center gap-2'>
+                                          {isTypeTest && (
+                                            <div className='text-small text-default-500'>
+                                              {job.tests_report?.success_count.toString()}/
+                                              {job.tests_report?.total_count.toString()}
+                                            </div>
+                                          )}
+                                          <Tooltip content='View Logs'>
+                                            <Button isIconOnly variant='light' size='sm'>
+                                              <Icon icon='lucide:file-text' size={18} />
+                                            </Button>
+                                          </Tooltip>
+                                          {/* <Tooltip content='Retry Job'>
                                         <Button
                                           isIconOnly
                                           variant='light'
@@ -224,10 +234,15 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                                         >
                                           <Icon icon='lucide:refresh-cw' size={18} />
                                         </Button>
-                                      </Tooltip>
+                                      </Tooltip> */}
+                                        </div>
+                                      </div>
+                                      <div className='text-red-400 text-sm text-left w-full mt-2'>
+                                        {checkError}
+                                      </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
                             </div>
                           ))}
                         </div>

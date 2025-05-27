@@ -74,7 +74,7 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
       {!loading && (
         <div className='grid grid-cols-5 items-center pt-2'>
           <h1 className='col-start-3 text-center font-bold text-xl'>{selectedBranch}</h1>
-          <div className='col-start-5 justify-self-end'>
+          <div className='col-start-5 justify-self-end pr-3'>
             <Button onPress={onOpen} color='primary' startContent={<Icon icon='lucide:plus' />}>
               Save Board
             </Button>
