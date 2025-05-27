@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 .npmrc
 store.json
+
+src-tauri/gen/android/keystore.properties
