@@ -1,8 +1,26 @@
 import { PipelineJobsResponse } from '../bindings/PipelineJobsResponse';
 
 export type JobKeys = 'build' | 'cve' | 'test' | 'test_offline';
-export type JobStatus = 'running' | 'completed' | 'failed' | 'pending' | 'success';
-export const jobKeys: JobKeys[] = ['build', 'cve', 'test', 'test_offline'];
+export const jobKeys: JobKeys[] = ['build', 'cve', 'test_offline', 'test'];
+
+export const JOB_STATUS_CONFIG = {
+  running: { priority: 1, color: 'primary' },
+  manual: { priority: 2, color: 'default' },
+  pending: { priority: 3, color: 'warning' },
+  preparing: { priority: 4, color: 'warning' },
+  scheduled: { priority: 5, color: 'default' },
+  waiting_for_resource: { priority: 6, color: 'warning' },
+  failed: { priority: 7, color: 'danger' },
+  canceling: { priority: 8, color: 'warning' },
+  canceled: { priority: 9, color: 'default' },
+  success: { priority: 10, color: 'success' },
+  created: { priority: 11, color: 'default' },
+  skipped: { priority: 12, color: 'default' },
+} as const;
+
+export type JobStatus = keyof typeof JOB_STATUS_CONFIG;
+export type JobPriority = (typeof JOB_STATUS_CONFIG)[JobStatus]['priority'];
+export type JobColor = (typeof JOB_STATUS_CONFIG)[JobStatus]['color'];
 
 export const getJobTypeSize = (
   pipeline: PipelineJobsResponse,
@@ -73,15 +91,10 @@ export const getJobTypeStatus = (
   return (status as JobStatus) || 'success';
 };
 
-export const getStatusColor = (
-  status: JobStatus,
-): 'primary' | 'success' | 'danger' | 'warning' | 'default' => {
-  const colors = {
-    running: 'primary',
-    completed: 'success',
-    failed: 'danger',
-    pending: 'warning',
-    success: 'success',
-  } as const;
-  return colors[status] ?? 'default';
+export function getJobPriority(status: JobStatus): JobPriority {
+  return JOB_STATUS_CONFIG[status].priority;
+}
+
+export const getStatusColor = (status: JobStatus): JobColor => {
+  return JOB_STATUS_CONFIG[status].color;
 };

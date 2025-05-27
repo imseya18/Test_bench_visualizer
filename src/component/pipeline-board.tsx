@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useBoardStore } from '../utils/board-store';
 import {
+  getJobPriority,
   JobStatus,
   jobKeys,
   getSuccessfulJobTypeSize,
@@ -172,55 +173,61 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                                 />
                                 <h3 className='text-medium font-semibold capitalize'>{type}</h3>
                               </div>
-                              {pipeline[type].map((job) => (
-                                <div
-                                  key={job.id}
-                                  className='flex items-center justify-between p-3 rounded-medium bg-content2'
-                                >
-                                  <div className='flex items-center gap-3'>
-                                    <Icon
-                                      icon={
-                                        job.status === 'running'
-                                          ? 'lucide:loader-2'
-                                          : job.status === 'success'
-                                          ? 'lucide:check'
-                                          : job.status === 'failed'
-                                          ? 'lucide:x'
-                                          : 'lucide:clock'
-                                      }
-                                      className={
-                                        job.status === 'running'
-                                          ? 'animate-spin'
-                                          : `text-${getStatusColor(job.status as JobStatus)}`
-                                      }
-                                      height='1.5em'
-                                    />
-                                    <div>
-                                      <div className='font-medium'>{job.name}</div>
-                                      {/* <div className="text-tiny text-default-500">
+                              {pipeline[type]
+                                .sort(
+                                  (a, b) =>
+                                    getJobPriority(a.status as JobStatus) -
+                                    getJobPriority(b.status as JobStatus),
+                                )
+                                .map((job) => (
+                                  <div
+                                    key={job.id}
+                                    className='flex items-center justify-between p-3 rounded-medium bg-content2'
+                                  >
+                                    <div className='flex items-center gap-3'>
+                                      <Icon
+                                        icon={
+                                          job.status === 'running'
+                                            ? 'lucide:loader-2'
+                                            : job.status === 'success'
+                                            ? 'lucide:check'
+                                            : job.status === 'failed'
+                                            ? 'lucide:x'
+                                            : 'lucide:clock'
+                                        }
+                                        className={
+                                          job.status === 'running'
+                                            ? 'animate-spin'
+                                            : `text-${getStatusColor(job.status as JobStatus)}`
+                                        }
+                                        height='1.5em'
+                                      />
+                                      <div>
+                                        <div className='font-medium'>{job.name}</div>
+                                        {/* <div className="text-tiny text-default-500">
                                         Duration: {formatDuration(job.duration)}
                                       </div> */}
+                                      </div>
+                                    </div>
+                                    <div className='flex items-center gap-2'>
+                                      <Tooltip content='View Logs'>
+                                        <Button isIconOnly variant='light' size='sm'>
+                                          <Icon icon='lucide:file-text' size={18} />
+                                        </Button>
+                                      </Tooltip>
+                                      <Tooltip content='Retry Job'>
+                                        <Button
+                                          isIconOnly
+                                          variant='light'
+                                          size='sm'
+                                          isDisabled={job.status === 'running'}
+                                        >
+                                          <Icon icon='lucide:refresh-cw' size={18} />
+                                        </Button>
+                                      </Tooltip>
                                     </div>
                                   </div>
-                                  <div className='flex items-center gap-2'>
-                                    <Tooltip content='View Logs'>
-                                      <Button isIconOnly variant='light' size='sm'>
-                                        <Icon icon='lucide:file-text' size={18} />
-                                      </Button>
-                                    </Tooltip>
-                                    <Tooltip content='Retry Job'>
-                                      <Button
-                                        isIconOnly
-                                        variant='light'
-                                        size='sm'
-                                        isDisabled={job.status === 'running'}
-                                      >
-                                        <Icon icon='lucide:refresh-cw' size={18} />
-                                      </Button>
-                                    </Tooltip>
-                                  </div>
-                                </div>
-                              ))}
+                                ))}
                             </div>
                           ))}
                         </div>
