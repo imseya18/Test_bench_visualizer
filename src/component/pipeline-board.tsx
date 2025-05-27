@@ -125,7 +125,7 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                   aria-label={pipeline.id.toString()}
                   title={
                     <div className='flex items-center justify-between py-2 w-full'>
-                      <div className='flex items-center gap-4'>
+                      <div className='flex items-center gap-4 pl-2'>
                         <Icon
                           icon='lucide:git-branch'
                           className={

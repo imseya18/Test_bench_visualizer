@@ -40,7 +40,11 @@ type GitLabSlice = {
   selectedBranch: string;
   isLoading: boolean;
   error: string | undefined;
-  fetchGitLabData: (branchName: BranchName | undefined, notification?: boolean) => Promise<void>;
+  fetchGitLabData: (
+    branchName: BranchName | undefined,
+    notification?: boolean,
+    SinceDays?: number,
+  ) => Promise<void>;
   getCardsPipeline(cardType: string): PipelineJobsResponse[];
   getCachedGitLabData: () => Promise<void>;
   setSelectedBranch(selectedBranch: string): void;
@@ -83,13 +87,20 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
   isLoading: false,
   error: undefined,
 
-  fetchGitLabData: async (branchName: string = '', notification: boolean = false) => {
+  fetchGitLabData: async (
+    branchName: string = '',
+    notification: boolean = false,
+    sinceDays: number = 14,
+  ) => {
     set({ isLoading: true, error: undefined });
     try {
       console.log('start api call');
       const dir = await resourceDir();
       const store = await load(dir + '/json/store.json', { autoSave: true });
-      const result = await invoke<ByCardsResponse>('test_api_call', { branch_name: branchName });
+      const result = await invoke<ByCardsResponse>('test_api_call', {
+        branch_name: branchName,
+        since_days: sinceDays,
+      });
       set((state) => ({
         gitLabCache: {
           ...state.gitLabCache,
