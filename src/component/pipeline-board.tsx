@@ -21,6 +21,7 @@ export const day = [
   { key: '30', label: 'Last 30 Days' },
   { key: '180', label: 'Last 180 Days' },
 ];
+
 //Wrapper needed to path component's props to our navigation
 export function PipelineDetailsWrapper() {
   const { state } = useLocation() as {

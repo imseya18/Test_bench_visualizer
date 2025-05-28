@@ -38,8 +38,8 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   const pushboard = useBoardStore((state) => state.pushBoards);
   const selectedBranch = useBoardStore((state) => state.selectedBranch);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
 
   useEffect(() => {
     // to prevent reRender when ReactMode.Strict enabled
@@ -51,9 +51,10 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   }, []);
 
   const handleSubmitNewBoard = () => {
+    console.time('compute-stats');
     const deviceCount = Object.keys(cards).length;
     const activeDevices = Object.values(cards).reduce((acc, card) => acc + (card.type ? 1 : 0), 0);
-
+    console.timeEnd('compute-stats');
     const newBoard: BoardProperties = {
       id: nanoid(),
       name,
@@ -125,11 +126,11 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
       <div className={`grid gap-4 p-3 flex-1 min-h-0 grid-cols-5 [grid-auto-rows:1fr]`}>
         {Object.values(cards)
           .sort((a, b) => b.onBoardPosition - a.onBoardPosition)
-          .map((cards) => (
+          .map((card) => (
             <DeviceCard
-              key={cards.id}
-              id={cards.id}
-              onBoardPosition={cards.onBoardPosition}
+              key={card.id}
+              id={card.id}
+              onBoardPosition={card.onBoardPosition}
             ></DeviceCard>
           ))}
       </div>
