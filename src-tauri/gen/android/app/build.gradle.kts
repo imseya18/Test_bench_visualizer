@@ -1,6 +1,5 @@
 import java.util.Properties
 import java.io.FileInputStream
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -24,8 +23,7 @@ android {
         targetSdk = 34
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
-    }
-    signingConfigs {
+            signingConfigs {
     create("release") {
         val keystorePropertiesFile = rootProject.file("keystore.properties")
         val keystoreProperties = Properties()
@@ -39,6 +37,7 @@ android {
         storePassword = keystoreProperties["password"] as String
     }
 }
+    }
     buildTypes {
         getByName("debug") {
             signingConfig = signingConfigs.getByName("release")
@@ -75,7 +74,6 @@ rust {
 }
 
 dependencies {
-    implementation("androidx.activity:activity-ktx:1.9.3")
     implementation("androidx.webkit:webkit:1.6.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")

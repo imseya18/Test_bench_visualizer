@@ -107,7 +107,10 @@ export const useBoardStore = create<CardSlice & GitLabSlice & JsonSlice>((set, g
           [branchName]: result,
         },
       }));
-      get().setGitLabData(result);
+      if (get().selectedBranch === branchName) {
+        console.log('data updated');
+        get().setGitLabData(result);
+      }
       await store.set('gitLabData', get().gitLabCache);
       await store.save();
       if (notification) {

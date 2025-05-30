@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">banc_test_mvp</string>
-    <string name="main_activity_title">banc_test_mvp</string>
+    <string name="app_name">TestBench Visualizer</string>
+    <string name="main_activity_title">TestBench Visualizer</string>
 </resources>
