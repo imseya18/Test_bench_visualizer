@@ -6,7 +6,7 @@ import {
   Spinner,
   Dropdown,
   DropdownTrigger,
-  Button,
+  //   Button,
   DropdownMenu,
   DropdownItem,
 } from '@heroui/react';
@@ -87,7 +87,7 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
   const borederColor = getStatusColor(status);
   return (
     <Card
-      className={`flex flex-col h-full border-${borederColor} border-1`}
+      className={`flex flex-col h-full border-${borederColor} border-1 cursor-pointer`}
       isPressable
       onPress={() => openPipelineDetails(id, type)}
     >
@@ -96,12 +96,22 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
           <h3 className='text-sm font-semibold'>{type}</h3>
           <Dropdown>
             <DropdownTrigger>
-              <Button
+              {/* <Button
                 variant='light'
                 color='default'
                 isIconOnly
                 startContent={<Icon icon='lucide:arrow-down' />}
-              ></Button>
+              ></Button> */}
+              <span
+                role='button'
+                tabIndex={0}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                className='p-2.5 hover:bg-gray-700 opacity-70 rounded-xl'
+              >
+                <Icon icon='lucide:arrow-down' />
+              </span>
             </DropdownTrigger>
             <DropdownMenu
               aria-label='Types de composants'
