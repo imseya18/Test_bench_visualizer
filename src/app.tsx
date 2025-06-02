@@ -9,14 +9,21 @@ import { PipelineDetailsWrapper } from './component/pipeline-board';
 import { useBoardStore } from './utils/board-store';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
+const ONE_HOUR = 3_600_000;
 function App() {
   const fetchGitLabData = useBoardStore((s) => s.fetchGitLabData);
   const fetchBoards = useBoardStore((s) => s.fetchBoards);
   const getCachedGitLabData = useBoardStore((s) => s.getCachedGitLabData);
+  setInterval(function () {
+    console.log('inteval parti');
+    fetchGitLabData('config/projects-scarthgap');
+    fetchGitLabData('config/projects-kirkstone', true);
+  }, ONE_HOUR);
+
   useEffect(() => {
     getCachedGitLabData();
     fetchGitLabData('config/projects-scarthgap');
-    fetchGitLabData('config/projects-kirkstone');
+    fetchGitLabData('config/projects-kirkstone', true);
     fetchBoards();
   }, [fetchGitLabData, fetchBoards, getCachedGitLabData]);
 

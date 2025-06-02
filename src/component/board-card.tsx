@@ -16,7 +16,7 @@ export function BoardCard(board: BoardProperties) {
     navigate('/board');
   };
   return (
-    <Card key={board.id} isPressable className='border border-content3'>
+    <Card key={board.id} className='border border-content3'>
       <CardBody className='p-0'>
         <div className='h-32 bg-content2 relative overflow-hidden'>
           {/* Board thumbnail or visualization */}

@@ -12,9 +12,9 @@ export const JOB_STATUS_CONFIG = {
   scheduled: { priority: 5, color: 'default', icon: 'lucide:clock' },
   waiting_for_resource: { priority: 6, color: 'warning', icon: 'lucide:clock' },
   failed: { priority: 7, color: 'danger', icon: 'lucide:x' },
-  canceling: { priority: 8, color: 'warning', icon: 'material-symbols:cancel-outline-rounded' },
-  canceled: { priority: 9, color: 'default', icon: 'material-symbols:cancel-outline-rounded' },
-  success: { priority: 10, color: 'success', icon: 'lucide:check' },
+  success: { priority: 8, color: 'success', icon: 'lucide:check' },
+  canceling: { priority: 9, color: 'warning', icon: 'material-symbols:cancel-outline-rounded' },
+  canceled: { priority: 10, color: 'default', icon: 'material-symbols:cancel-outline-rounded' },
   created: { priority: 11, color: 'default', icon: 'lucide:clock' },
   skipped: { priority: 12, color: 'default', icon: 'material-symbols:cancel-outline-rounded' },
 } as const;
@@ -43,7 +43,10 @@ export const getJobTestTypeSize = (
   const jobLen = keys.reduce(
     (sum, type) =>
       sum +
-      pipeline[type].reduce((sum, job) => sum + normalizeTotal(job.tests_report?.total_count), 0),
+      pipeline[type].reduce(
+        (sum, job) => sum + normalizeTotal(job.tests_report?.total_count ?? BigInt(1)),
+        0,
+      ),
     0,
   );
   return jobLen;

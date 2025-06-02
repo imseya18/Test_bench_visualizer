@@ -142,6 +142,9 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                             Started {date.toLocaleDateString('fr-FR')} at{' '}
                             {date.toLocaleTimeString('fr-FR')}
                           </div>
+                          <div className='text-small text-default-500'>
+                            id: {String(pipeline.id)}
+                          </div>
                         </div>
                       </div>
                       <div className='flex items-center gap-4'>
@@ -215,7 +218,7 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                                           </div>
                                         </div>
                                         <div className='flex items-center gap-2'>
-                                          {isTypeTest && (
+                                          {job.tests_report && (
                                             <div className='text-small text-default-500'>
                                               {job.tests_report?.success_count.toString()}/
                                               {job.tests_report?.total_count.toString()}
