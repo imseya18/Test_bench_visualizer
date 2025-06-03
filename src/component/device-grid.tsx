@@ -1,9 +1,10 @@
 import '../App.css';
 import { DeviceCard } from './device-card';
-import { BoardProperties } from '../utils/board-store';
+import { BoardProperties, useJsonStore } from '../stores/json-store';
 import { useEffect, useState } from 'react';
-import { CardPropreties } from '../utils/board-store';
-import { useBoardStore } from '../utils/board-store';
+import { useGitLabStore } from '../stores/gitlab-store';
+import { CardPropreties } from '../stores/card-store';
+import { useCardStore } from '../stores/card-store';
 import { nanoid } from 'nanoid';
 import { Icon } from '@iconify/react';
 import {
@@ -32,11 +33,11 @@ export const day = [
 
 export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   const total = rows * columns;
-  const initCard = useBoardStore((state) => state.initCard);
-  const cards = useBoardStore((state) => state.cards);
-  const loading = useBoardStore((state) => state.jsonLoading);
-  const pushboard = useBoardStore((state) => state.pushBoards);
-  const selectedBranch = useBoardStore((state) => state.selectedBranch);
+  const initCard = useCardStore((state) => state.initCard);
+  const cards = useCardStore((state) => state.cards);
+  const loading = useJsonStore((state) => state.jsonLoading);
+  const pushboard = useJsonStore((state) => state.pushBoards);
+  const selectedBranch = useGitLabStore((state) => state.selectedBranch);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');

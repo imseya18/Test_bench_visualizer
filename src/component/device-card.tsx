@@ -11,8 +11,10 @@ import {
   DropdownItem,
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
-import { CardPropreties, useBoardStore } from '../utils/board-store';
+import { CardPropreties } from '../stores/card-store';
+import { useCardStore } from '../stores/card-store';
 import { useNavigate } from 'react-router-dom';
+import { useGitLabStore } from '../stores/gitlab-store';
 import { ChooseCard } from './choose-card';
 import { CardProgressBar } from './card-progress-bar';
 import { getStatusColor, getJobTypeStatus } from '../utils/job-utilities';
@@ -21,19 +23,19 @@ import { CardType } from '../utils/global-variable';
 import { Skeleton } from '@heroui/skeleton';
 
 export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
-  const useGetCard = useBoardStore((state) => state.getCard);
-  const gitLabData = useBoardStore((State) => State.gitLabData);
+  const useGetCard = useCardStore((state) => state.getCard);
+  const gitLabData = useGitLabStore((State) => State.gitLabData);
   const card = useGetCard(id);
   const navigate = useNavigate();
-  const useUpdateCard = useBoardStore((state) => state.updateCard);
+  const useUpdateCard = useCardStore((state) => state.updateCard);
   const updateCard = (patch: Partial<CardPropreties>) => {
     useUpdateCard(id, patch);
   };
   if (!card) return;
 
   const { type } = card;
-  const pipelinesRecord = useBoardStore((state) => state.gitLabData[type as string]);
-  const isLoading = useBoardStore((state) => state.isLoading);
+  const pipelinesRecord = useGitLabStore((state) => state.gitLabData[type as string]);
+  const isLoading = useGitLabStore((state) => state.isLoading);
   const openPipelineDetails = (deviceId: string, deviceName: string) => {
     navigate('/pipelines', {
       state: {

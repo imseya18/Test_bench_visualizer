@@ -6,14 +6,15 @@ import { DeviceGrid } from './component/device-grid';
 import { Settings } from './component/settings';
 import { Dashboard } from './component/dashboard';
 import { PipelineDetailsWrapper } from './component/pipeline-board';
-import { useBoardStore } from './utils/board-store';
+import { useGitLabStore } from './stores/gitlab-store';
+import { useJsonStore } from './stores/json-store';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 const ONE_HOUR = 3_600_000;
 function App() {
-  const fetchGitLabData = useBoardStore((s) => s.fetchGitLabData);
-  const fetchBoards = useBoardStore((s) => s.fetchBoards);
-  const getCachedGitLabData = useBoardStore((s) => s.getCachedGitLabData);
+  const fetchGitLabData = useGitLabStore((s) => s.fetchGitLabData);
+  const fetchBoards = useJsonStore((s) => s.fetchBoards);
+  const getCachedGitLabData = useGitLabStore((s) => s.getCachedGitLabData);
   setInterval(function () {
     console.log('inteval parti');
     fetchGitLabData('config/projects-scarthgap');

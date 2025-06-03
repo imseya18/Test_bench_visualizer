@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { Button, Spinner } from '@heroui/react';
 import { Icon } from '@iconify/react';
-import { useBoardStore } from '../utils/board-store';
-import { CardPropreties } from '../utils/board-store';
+import { useJsonStore } from '../stores/json-store';
+import { useCardStore } from '../stores/card-store';
+import { CardPropreties } from '../stores/card-store';
 import { BoardCard } from './board-card';
 export const formatRelativeTime = (dateEntry: Date): string => {
   const date = new Date(dateEntry);
@@ -21,10 +22,10 @@ export const formatRelativeTime = (dateEntry: Date): string => {
 };
 
 export function Dashboard() {
-  const boards = useBoardStore((state) => state.boards);
-  const loading = useBoardStore((state) => state.jsonLoading);
+  const boards = useJsonStore((state) => state.boards);
+  const loading = useJsonStore((state) => state.jsonLoading);
   const navigate = useNavigate();
-  const setCards = useBoardStore((state) => state.setCards);
+  const setCards = useCardStore((state) => state.setCards);
   const goToSelectedBoards = (cards: Record<string, CardPropreties>) => {
     setCards(cards);
     navigate('/board');

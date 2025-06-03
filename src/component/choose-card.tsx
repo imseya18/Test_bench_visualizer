@@ -1,5 +1,5 @@
 import { Button, Dropdown, DropdownTrigger } from '@heroui/react';
-import { CardPropreties } from '../utils/board-store';
+import { CardPropreties } from '../stores/card-store';
 import { Icon } from '@iconify/react';
 import { CardTypeDropdown } from './type-card-dropdown';
 export function ChooseCard({ id, onBoardPosition }: CardPropreties) {

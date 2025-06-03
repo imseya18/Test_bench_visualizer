@@ -1,15 +1,16 @@
-import { BoardProperties } from '../utils/board-store';
+import { BoardProperties } from '../stores/json-store';
 import { Card, CardBody, CardFooter, Button, Tooltip } from '@heroui/react';
 import { Modal, ModalContent, useDisclosure, ModalHeader, ModalBody } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { formatRelativeTime } from './dashboard';
-import { useBoardStore } from '../utils/board-store';
-import { CardPropreties } from '../utils/board-store';
+import { useJsonStore } from '../stores/json-store';
+import { CardPropreties } from '../stores/card-store';
+import { useCardStore } from '../stores/card-store';
 import { useNavigate } from 'react-router-dom';
 export function BoardCard(board: BoardProperties) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const removeBoard = useBoardStore((state) => state.removeBoard);
-  const setCards = useBoardStore((state) => state.setCards);
+  const removeBoard = useJsonStore((state) => state.removeBoard);
+  const setCards = useCardStore((state) => state.setCards);
   const navigate = useNavigate();
   const goToSelectedBoards = (cards: Record<string, CardPropreties>) => {
     setCards(cards);

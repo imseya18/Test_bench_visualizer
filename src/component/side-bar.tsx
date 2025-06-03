@@ -9,15 +9,15 @@ import {
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useNavigate } from 'react-router-dom';
-import { useBoardStore } from '../utils/board-store';
+import { useGitLabStore } from '../stores/gitlab-store';
 import { BRANCH_NAME_ARRAY } from '../utils/global-variable';
 
 export function Sidebar() {
   const navigate = useNavigate();
-  const fetchGitLabData = useBoardStore((state) => state.fetchGitLabData);
-  const apiLoading = useBoardStore((state) => state.isLoading);
-  const selectedBranch = useBoardStore((state) => state.selectedBranch);
-  const setSelectedBranch = useBoardStore((state) => state.changeSelectedBranch);
+  const fetchGitLabData = useGitLabStore((state) => state.fetchGitLabData);
+  const apiLoading = useGitLabStore((state) => state.isLoading);
+  const selectedBranch = useGitLabStore((state) => state.selectedBranch);
+  const setSelectedBranch = useGitLabStore((state) => state.changeSelectedBranch);
   return (
     <div className='h-screen w-16 bg-content2 flex flex-col items-center py-4 border-r border-content3'>
       <Tooltip content='Dashboard' placement='right'>

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Card, CardBody, Button, Accordion, AccordionItem, Tooltip, Spinner } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useBoardStore } from '../utils/board-store';
+import { useGitLabStore } from '../stores/gitlab-store';
 import {
   checkUnexpectedCase,
   getJobPriority,
@@ -49,9 +49,9 @@ interface PipelineDetailsProps {
 }
 
 export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
-  const pipelinesRecord = useBoardStore((state) => state.gitLabData[deviceName]);
+  const pipelinesRecord = useGitLabStore((state) => state.gitLabData[deviceName]);
 
-  const isLoading = useBoardStore((state) => state.isLoading);
+  const isLoading = useGitLabStore((state) => state.isLoading);
   const pipelines = useMemo(
     () =>
       isLoading && Object.keys(pipelinesRecord).length === 0
@@ -114,7 +114,7 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
         {/* Pipeline List */}
         <div className='w-full'>
           <Accordion selectionMode='multiple' className='gap-4 flex flex-col w-full'>
-            {pipelines.reverse().map((pipeline) => {
+            {[...pipelines].reverse().map((pipeline) => {
               const successfulJobLen = getSuccessfulJobTypeSize(pipeline);
               const totalJobLen = getJobTypeSize(pipeline);
               const isPipelineSuccess = successfulJobLen === totalJobLen ? true : false;
@@ -180,7 +180,7 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                                 />
                                 <h3 className='text-medium font-semibold capitalize'>{type}</h3>
                               </div>
-                              {pipeline[type]
+                              {[...pipeline[type]]
                                 .sort(
                                   (a, b) =>
                                     getJobPriority(a.status as JobStatus) -
