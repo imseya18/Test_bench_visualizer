@@ -25,6 +25,7 @@ type GitLabSlice = {
   setSelectedBranch(selectedBranch: string): void;
   changeSelectedBranch(selectedBranch: string): void;
   setGitLabData(gitLabData: ByCardsResponse): void;
+  resetGitLab(): void;
 };
 
 export const useGitLabStore = create<GitLabSlice>()(
@@ -44,7 +45,7 @@ export const useGitLabStore = create<GitLabSlice>()(
         draft.isLoading = true;
         draft.error = undefined;
       });
-
+      console.log('api call start');
       try {
         const dir = await resourceDir();
         const store = await load(dir + '/json/store.json', { autoSave: true });
@@ -52,7 +53,7 @@ export const useGitLabStore = create<GitLabSlice>()(
           branch_name: branchName,
           since_days: sinceDays,
         });
-
+        console.log('ResultL', result);
         set((draft) => {
           draft.gitLabCache[branchName] = result;
         });
