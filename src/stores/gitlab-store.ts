@@ -15,12 +15,23 @@ type GitLabSlice = {
   selectedBranch: string;
   isLoading: boolean;
   error: string | undefined;
+  /**
+   * Get the Pipeline Data of a specific branch, store the response in the cache.
+   *
+   * @param {BranchName | undefined} branchName Name of the branch; use '' if you don't want a specific branch.
+   * @param {boolean} notification Should a notification display at the end of the call?
+   * @param {number} sinceDays Number of days from which the data should be retrieved.
+   */
   fetchGitLabData: (
     branchName: BranchName | undefined,
     notification?: boolean,
     SinceDays?: number,
   ) => Promise<void>;
   getCardsPipeline(cardType: string): PipelineJobsResponse[];
+  /**
+   * Return the GitLabData cached on the Json File.
+   * @returns {Promise<void>}
+   */
   getCachedGitLabData: () => Promise<void>;
   setSelectedBranch(selectedBranch: string): void;
   changeSelectedBranch(selectedBranch: string): void;

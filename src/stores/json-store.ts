@@ -20,10 +20,24 @@ type JsonSlice = {
   boards: Record<string, BoardProperties>;
   jsonLoading: boolean;
   jsonError: string | undefined;
+  /**
+   * Fetch all cached Boards and assign them to the `boards` property of this slice.
+   * @returns {Promise<void>}
+   */
   fetchBoards: () => Promise<void>;
   pushBoards: (board: BoardProperties) => Promise<void>;
+  /**
+   * Delete a board from `boards` and immediatly store the new state to the Json Cache
+   * @param boardName Name of the board to delete
+   * @returns
+   */
   removeBoard: (boardName: string) => Promise<void>;
+  /**
+   * save the current states of `boards` to the Json cache
+   * @returns {Promise<void>}
+   */
   saveBoardToJson: () => Promise<void>;
+  resetJson: () => void;
 };
 
 export const useJsonStore = create<JsonSlice>()(
@@ -35,7 +49,7 @@ export const useJsonStore = create<JsonSlice>()(
     fetchBoards: async () => {
       set((state) => {
         state.jsonLoading = true;
-        state.error = undefined;
+        state.jsonError = undefined;
       });
       try {
         const dir = await resourceDir();
@@ -59,7 +73,7 @@ export const useJsonStore = create<JsonSlice>()(
 
     saveBoardToJson: async () => {
       const allBoards = get().boards;
-
+      console.log('all board:', allBoards);
       const dir = await resourceDir();
       const store = await load(dir + '/json/store.json', { autoSave: true });
       await store.set('Boards', allBoards);
