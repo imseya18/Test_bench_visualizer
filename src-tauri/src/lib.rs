@@ -53,7 +53,6 @@ async fn test_api_call(
         .build_async()
         .await
         .map_err(|e| e.to_string())?;
-    //todo Add Number of days variable calls and pipeline name. Actually hard coded
     let pipelines = get_project_pipelines(&ProjectId::Ci, &client, since_days, branch_name)
         .await
         .map_err(|e| e.to_string())?;
@@ -66,11 +65,19 @@ async fn test_api_call(
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    // *it need to be mutable for the mobile build.
+    let mut builder = tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_persisted_scope::init())
         .plugin(tauri_plugin_store::Builder::new().build())
-        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_opener::init());
+
+    #[cfg(any(target_os = "android", target_os = "ios"))]
+    {
+        builder = builder.plugin(tauri_plugin_barcode_scanner::init());
+    }
+
+    builder
         .invoke_handler(tauri::generate_handler![
             set_api_key,
             get_api_key,
