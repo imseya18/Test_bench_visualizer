@@ -139,8 +139,7 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                         <div>
                           <div className='font-semibold'>{pipeline.title}</div>
                           <div className='text-small text-default-500'>
-                            Started {date.toLocaleDateString('fr-FR')} at{' '}
-                            {date.toLocaleTimeString('fr-FR')}
+                            {date.toLocaleDateString('fr-FR')} at {date.toLocaleTimeString('fr-FR')}
                           </div>
                           <div className='text-small text-default-500'>
                             id: {String(pipeline.id)}

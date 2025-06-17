@@ -16,7 +16,6 @@ function App() {
   const fetchBoards = useJsonStore((s) => s.fetchBoards);
   const getCachedGitLabData = useGitLabStore((s) => s.getCachedGitLabData);
   setInterval(function () {
-    console.log('inteval parti');
     fetchGitLabData('config/projects-scarthgap');
     fetchGitLabData('config/projects-kirkstone', true);
   }, ONE_HOUR);
