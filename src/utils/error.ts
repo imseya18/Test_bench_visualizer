@@ -23,3 +23,12 @@ export function storeError(error: string) {
     timeout: 3000,
   });
 }
+
+export function bleError(error: string) {
+  addToast({
+    title: 'BLE Error',
+    color: 'danger',
+    description: error,
+    timeout: 3000,
+  });
+}

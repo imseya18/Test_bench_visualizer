@@ -11,6 +11,9 @@ importers:
       '@heroui/react':
         specifier: 2.8.0-beta.2
         version: 2.8.0-beta.2(@types/react@18.3.20)(framer-motion@12.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwindcss@4.1.4)
+      '@mnlphlp/plugin-blec':
+        specifier: ^0.4.1
+        version: 0.4.1
       '@tailwindcss/postcss':
         specifier: ^4.1.4
         version: 4.1.4
@@ -1255,6 +1258,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@mnlphlp/plugin-blec@0.4.1':
+    resolution: {integrity: sha512-oxxgZVjh3anarvkp+nyHuM9/5KMQr6EdU6SWEult7Y4ZJFf314nDYZR8ExRoKQP9YOBQZ3tmpJlhchqRKjLXdA==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -6379,6 +6385,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+
+  '@mnlphlp/plugin-blec@0.4.1':
+    dependencies:
+      '@tauri-apps/api': 2.5.0
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
