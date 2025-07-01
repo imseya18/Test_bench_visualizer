@@ -5,7 +5,7 @@ use tauri_plugin_store::StoreExt;
 mod models;
 mod services;
 use models::{enums::ProjectId, response::ByCardsResponse};
-use services::gitlab_services::{build_front_response, get_project_pipelines};
+use services::gitlab_services::{get_project_pipelines, build_front_response_concurrency};
 
 #[derive(Default)]
 struct AppState {
@@ -56,7 +56,7 @@ async fn test_api_call(
     let pipelines = get_project_pipelines(&ProjectId::Ci, &client, since_days, branch_name)
         .await
         .map_err(|e| e.to_string())?;
-    let result = build_front_response(pipelines, &client).await;
+    let result = build_front_response_concurrency(pipelines, &client).await;
     match result {
         Ok(result) => Ok(result),
         Err(e) => Err(e.to_string()),

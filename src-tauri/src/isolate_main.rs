@@ -3,7 +3,7 @@
 mod models;
 mod services;
 use models::{enums::ProjectId, response::ByCardsResponse};
-use services::gitlab_services::{build_front_response, get_project_pipelines, build_front_response_concurrency};
+use services::gitlab_services::{get_project_pipelines, build_front_response_concurrency};
 
 #[tauri::command(rename_all = "snake_case")]
 async fn test_api_call_test(
