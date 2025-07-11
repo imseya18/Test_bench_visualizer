@@ -22,6 +22,7 @@ import {
 
 import {
   TURN_ON,
+  TURN_OFF,
   SET_BLUE,
   SET_GREEN,
   SET_RED,
@@ -32,7 +33,7 @@ import {
   SECTION,
   WS2812B,
 } from '../utils/led-control';
-const uuid = '0000fee7-0000-1000-8000-00805f9b34fb';
+const UUID_SERVICE = 'd0d02988-9d8c-41e1-abbc-c1587419475d';
 const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
   event.preventDefault();
   const data = Object.fromEntries(new FormData(event.currentTarget));
@@ -50,7 +51,7 @@ const QrCodePress = async () => {
 };
 
 const controlLed = async (instruction: Uint8Array<ArrayBuffer>) => {
-  await send('0000ffe1-0000-1000-8000-00805f9b34fb', instruction, 'withResponse');
+  await send('b18d531d-0d2e-4315-b253-677c0b9bdf72', instruction, 'withoutResponse');
 };
 
 export function Settings() {
@@ -75,13 +76,13 @@ export function Settings() {
   }, []);
 
   const test = (dev: BleDevice[]) => {
-    const new_tab = dev.filter((device) => device.services.includes(uuid));
+    const new_tab = dev.filter((device) => device.services.includes(UUID_SERVICE));
     setDevices(new_tab);
   };
 
   const tryConnection = () => {
     try {
-      connect('79:97:04:04:08:8A', () => bleError('Led Disconected'));
+      connect('34:85:18:4A:88:E1', () => bleError('Led Disconected'));
     } catch (error: unknown) {
       console.log(test);
       const message = String(error);
@@ -133,7 +134,10 @@ export function Settings() {
       </Button>
       <div className='flex space-x-4'>
         <Button color='primary' onPress={() => controlLed(TURN_ON)}>
-          Led ON/OFF
+          Led ON
+        </Button>
+        <Button color='primary' onPress={() => controlLed(TURN_OFF)}>
+          Led OFF
         </Button>
         <Button color='primary' onPress={() => controlLed(SET_RED)}>
           RED

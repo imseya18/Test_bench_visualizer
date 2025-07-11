@@ -97,6 +97,7 @@ export function Sidebar() {
           color='success'
           className='mb-4'
           aria-label='Start All Tests'
+          onPress={() => navigate('bluetooth')}
         >
           <Icon icon='lucide:play' width={24} />
         </Button>
