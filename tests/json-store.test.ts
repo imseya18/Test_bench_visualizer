@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable unicorn/no-useless-undefined */
 // tests/jsonStore.test.ts
 import { act } from 'react';
 import { useJsonStore, BoardProperties } from '../src/stores/json-store';

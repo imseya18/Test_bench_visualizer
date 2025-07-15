@@ -1,8 +1,9 @@
+/* eslint-disable unicorn/no-null */
 // src/builders/JobBuilder.ts
 
-import { Job } from '../src/bindings/Job';
-import { TestSuite } from '../src/bindings/TestSuite';
-import { Commit } from '../src/bindings/Commit';
+import { Job } from '../../src/bindings/Job';
+import { TestSuite } from '../../src/bindings/TestSuite';
+import { Commit } from '../../src/bindings/Commit';
 
 export class JobBuilder {
   private _commit: Commit;

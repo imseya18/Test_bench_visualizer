@@ -23,6 +23,7 @@ export default defineConfig([
     rules: {
       'react/react-in-jsx-scope': 'off',
       'unicorn/prevent-abbreviations': 'off',
+      'unicorn/filename-case': 'off',
     },
   },
 ]);
