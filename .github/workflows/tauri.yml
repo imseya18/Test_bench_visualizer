@@ -1,0 +1,10 @@
+name: Stub‑CI (main)
+
+on:
+  pull_request: {}          
+  workflow_dispatch: {}     
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "stub on main – CI enregistrée"
