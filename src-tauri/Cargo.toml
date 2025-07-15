@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "A Tauri App"
 authors = ["you"]
 edition = "2021"
-
+default-run = "banc_test_mvp"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
@@ -31,6 +31,12 @@ tokio = "1.45.0"
 chrono = "0.4.41"
 ts-rs = "10.1.0"
 tauri-plugin-blec = "0.5.3"
+futures = "0.3.31"
 
 [target.'cfg(any(target_os = "android", target_os = "ios"))'.dependencies]
 tauri-plugin-barcode-scanner = "2"
+
+
+[[bin]]
+name = "isolate_main"
+path = "src/isolate_main.rs"

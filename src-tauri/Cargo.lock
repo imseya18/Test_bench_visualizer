@@ -340,6 +340,7 @@ name = "banc_test_mvp"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "futures",
  "gitlab",
  "serde",
  "serde_json",
