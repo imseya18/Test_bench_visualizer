@@ -35,7 +35,7 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
     useUpdateCard(id, patch);
   };
   const type = card?.type;
-  const pipelinesRecord = type ? gitLabData[type] : {};
+  const pipelinesRecord = type && gitLabData?.[type] ? gitLabData[type] : {};
   const pipelineList = Object.values(pipelinesRecord);
   const latestPipeline = pipelineList.at(-1);
   const status = latestPipeline
