@@ -15,20 +15,22 @@ export function gitlabError(error: string) {
   });
 }
 
-export function storeError(error: string) {
+export function storeError(error: unknown) {
+  const message = String(error);
   addToast({
     title: 'store Error',
     color: 'danger',
-    description: error,
+    description: message,
     timeout: 3000,
   });
 }
 
-export function bleError(error: string) {
+export function bleError(error: unknown) {
+  const message = String(error);
   addToast({
     title: 'BLE Error',
     color: 'danger',
-    description: error,
+    description: message,
     timeout: 3000,
   });
 }

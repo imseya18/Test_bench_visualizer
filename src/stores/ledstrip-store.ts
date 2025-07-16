@@ -1,7 +1,9 @@
-import { BleDevice } from '@mnlphlp/plugin-blec';
+import { BleDevice, stopScan } from '@mnlphlp/plugin-blec';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { scanBleDevices } from '../utils/ble-utils';
+import { bleError } from '../utils/error';
+import { CARD_SPOT_NUMBER } from '../app';
 const UUID_SERVICE = 'd0d02988-9d8c-41e1-abbc-c1587419475d';
 const MIN_BRIGHTNESS = 0;
 const MAX_BRIGHTNESS = 255;
@@ -11,7 +13,7 @@ interface LEDStripState {
   ledStrips: BleDevice[];
   selectedStrip: BleDevice | undefined;
 
-  brightness: number;
+  brightness: number | number[];
   ledCount: number;
   autoConnect: boolean;
 
@@ -19,6 +21,7 @@ interface LEDStripState {
   setSelectedStrip: (strip: BleDevice) => void;
   updateSelectedStrip: (update: Partial<BleDevice>) => void;
   setBrightness: (value: number) => void;
+  setLedCOunt: (value: number) => void;
 }
 
 export const useLedStripStore = create<LEDStripState>()(
@@ -42,11 +45,15 @@ export const useLedStripStore = create<LEDStripState>()(
             }),
           5000,
         );
-      } 
-      finally {
+      } catch (error) {
+        console.error(error);
+        const message = String(error);
+        bleError(message);
+      } finally {
         set((draft) => {
           draft.isScanning = false;
         });
+        stopScan();
       }
     },
 
@@ -65,13 +72,24 @@ export const useLedStripStore = create<LEDStripState>()(
     },
 
     setBrightness(value: number) {
-        if(value < MIN_BRIGHTNESS || value > MAX_BRIGHTNESS){
-            console.warn("Wrong Brightness value");
-            return; 
-        }
-        set((draft) => {
-            draft.brightness = value;
-        })
-    }
+      if (value < MIN_BRIGHTNESS || value > MAX_BRIGHTNESS) {
+        console.warn('Wrong Brightness value');
+        return;
+      }
+      console.log(value);
+      set((draft) => {
+        draft.brightness = value;
+      });
+    },
+
+    setLedCOunt(value: number) {
+      if (value < CARD_SPOT_NUMBER) {
+        console.warn('Led count value must be superior to', CARD_SPOT_NUMBER);
+        return;
+      }
+      set((draft) => {
+        draft.ledCount = value;
+      });
+    },
   })),
 );

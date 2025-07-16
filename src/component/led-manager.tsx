@@ -22,17 +22,18 @@ import { getConnectionUpdates } from '@mnlphlp/plugin-blec';
 import { addToast } from '@heroui/react';
 import { connect, disconnect } from '@mnlphlp/plugin-blec';
 import { bleError } from '../utils/error';
+import { setLedBrightness } from '../utils/led-control';
 export function LEDStripManager() {
   const [ledCount, setLedCount] = useState(60);
   const [autoConnect, setAutoConnect] = useState(false);
 
-  
   const scanForStrip = useLedStripStore((state) => state.scanForStrip);
   const ledStrips = useLedStripStore((state) => state.ledStrips);
   const isScanning = useLedStripStore((state) => state.isScanning);
   const setSelectedStrip = useLedStripStore((state) => state.setSelectedStrip);
   const selectedStrip = useLedStripStore((state) => state.selectedStrip);
   const updateSelectedStrip = useLedStripStore((state) => state.updateSelectedStrip);
+  const setBrightness = useLedStripStore((state) => state.setBrightness);
   const brightness = useLedStripStore((state) => state.brightness);
   useEffect(() => {
     getConnectionUpdates((state) => {
@@ -47,28 +48,28 @@ export function LEDStripManager() {
       }
     });
   }, []);
-
+  useEffect(() => {
+    setLedBrightness(brightness as number);
+  }, [brightness]);
   const handleConnect = async () => {
     if (!selectedStrip) return;
-      try {
-        await connect(selectedStrip.address, () => {
-        updateSelectedStrip({ isConnected: false });
-        bleError('Led Disconected');
-        });
-      } catch (error: unknown) {
-        console.log('test');
-        const message = String(error);
-        bleError(message);
-      }
+    try {
+      await connect(selectedStrip.address, () => {});
+    } catch (error: unknown) {
+      const message = String(error);
+      bleError(message);
+    }
   };
 
   const handleDisconnect = async () => {
     try {
       await disconnect();
+      bleError('Led Disconected');
     } catch (error: unknown) {
-      console.log('test');
       const message = String(error);
       bleError(message);
+    } finally {
+      updateSelectedStrip({ isConnected: false });
     }
   };
 
@@ -149,29 +150,24 @@ export function LEDStripManager() {
               {selectedStrip.isConnected ? 'Disconnect' : 'Connect to LED Strip'}
             </Button>
 
-            <Tooltip
-              content={
-                selectedStrip.isConnected ? 'Adjust brightness' : 'Connect to adjust brightness'
-              }
-            >
-              <div>
-                <Slider
-                  label='Brightness'
-                  step={1}
-                  maxValue={100}
-                  minValue={0}
-                  value={brightness}
-                  className='max-w-md'
-                />
-              </div>
-            </Tooltip>
+            <div>
+              <Slider
+                label='Brightness'
+                step={1}
+                defaultValue={brightness}
+                maxValue={255}
+                minValue={0}
+                onChangeEnd={(value) => setBrightness(value as number)}
+                className='max-w-md'
+              />
+            </div>
 
             <Input
               type='number'
               label='Number of LEDs'
               placeholder='Enter the number of LEDs'
               value={ledCount.toString()}
-              onValueChange={(value) => setLedCount(parseInt(value) || 0)}
+              onValueChange={(value) => setLedCount(Number.parseInt(value) || 0)}
               disabled={!selectedStrip.isConnected}
               startContent={
                 <Icon
