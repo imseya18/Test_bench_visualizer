@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { Input, Form, Button } from '@heroui/react';
+
+import { Input, Button, Card, CardBody } from '@heroui/react';
 import { invoke } from '@tauri-apps/api/core';
 import { Icon } from '@iconify/react';
 import {
@@ -9,163 +9,58 @@ import {
   checkPermissions,
   requestPermissions,
 } from '@tauri-apps/plugin-barcode-scanner';
-import { addToast } from '@heroui/react';
-import { bleError } from '../utils/error';
-import {
-  BleDevice,
-  getConnectionUpdates,
-  startScan,
-  connect,
-  disconnect,
-  send,
-} from '@mnlphlp/plugin-blec';
-
-import {
-  TURN_ON,
-  TURN_OFF,
-  SET_BLUE,
-  SET_GREEN,
-  SET_RED,
-  BRIGHTNESS_UP,
-  BRIGHTNESS_DOWN,
-  LED,
-  CMD_SET_RGB_SEQ,
-  SECTION,
-  WS2812B,
-} from '../utils/led-control';
-const UUID_SERVICE = 'd0d02988-9d8c-41e1-abbc-c1587419475d';
-const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
-  const data = Object.fromEntries(new FormData(event.currentTarget));
-  invoke('set_api_key', { token: data.Token });
-};
-
+import { gitlabError } from '../utils/error';
+import { LEDStripManager } from './led-manager';
+import { Divider } from '@heroui/divider';
 const QrCodePress = async () => {
   const permission = await checkPermissions();
   if (permission === 'prompt') await requestPermissions();
   if (permission === 'granted') {
-    console.log('ok');
     const test = await scan({ cameraDirection: 'back', formats: [Format.QRCode] });
     invoke('set_api_key', { token: test.content });
   }
 };
 
-const controlLed = async (instruction: Uint8Array<ArrayBuffer>) => {
-  await send('b18d531d-0d2e-4315-b253-677c0b9bdf72', instruction, 'withoutResponse');
-};
-
 export function Settings() {
-  const [devices, setDevices] = useState<BleDevice[]>([]);
-
-  useEffect(() => {
-    console.log(devices);
-  }, [devices]);
-
-  useEffect(() => {
-    getConnectionUpdates((state) => {
-      console.log(state);
-      if (state) {
-        addToast({
-          title: 'LED',
-          color: 'success',
-          description: 'Led connected',
-          timeout: 3000,
-        });
-      }
-    });
-  }, []);
-
-  const test = (dev: BleDevice[]) => {
-    const new_tab = dev.filter((device) => device.services.includes(UUID_SERVICE));
-    setDevices(new_tab);
-  };
-
-  const tryConnection = () => {
+  const [gitlabToken, setGitlabToken] = useState<string>('');
+  const submitGitLabToken = async () => {
     try {
-      connect('34:85:18:4A:88:E1', () => bleError('Led Disconected'));
+      await invoke('set_api_key', { token: gitlabToken });
     } catch (error: unknown) {
-      console.log(test);
-      const message = String(error);
-      bleError(message);
+      gitlabError(error);
     }
   };
 
-  const tryDisconnection = () => {
-    try {
-      disconnect();
-    } catch (error: unknown) {
-      console.log(test);
-      const message = String(error);
-      bleError(message);
-    }
-  };
   return (
-    <div className='flex-1 flex flex-col items-center justify-center gap-4 w-fullscreen'>
-      <Form className='w-full max-w-xs' onSubmit={onSubmit}>
-        <div className='flex flex-row gap-3 '>
-          <Input
-            className='max-w-xs'
-            name='Token'
-            label='Token'
-            placeholder='Enter Gitlab Token'
-            type={'password'}
-            variant='bordered'
-          />
-          <Button isIconOnly className='h-14 w-16 2xl:hidden'>
-            <Icon
-              icon='material-symbols:qr-code'
-              style={{ fontSize: '24px' }}
-              onClick={QrCodePress}
+    <div className='flex flex-col items-center  flex-1 p-6 overflow-auto'>
+      <h1 className='text-2xl font-bold mb-4'>Settings</h1>
+      <div className='w-full max-w-3xl space-y-6'>
+        <LEDStripManager />
+
+        <Divider className='mt-6 mb-6 max-w-3xl' />
+
+        <Card>
+          <CardBody className='space-y-6'>
+            <h2 className='text-xl font-semibold'>GitLab Configuration</h2>
+
+            <Input
+              label='GitLab API Token'
+              placeholder='Enter your GitLab API token'
+              type='password'
+              value={gitlabToken}
+              onValueChange={setGitlabToken}
+              startContent={
+                <Icon
+                  icon='logos:gitlab'
+                  className='text-default-400 pointer-events-none flex-shrink-0'
+                />
+              }
             />
-          </Button>
-        </div>
-        <Button color='primary' type='submit'>
-          Submit
-        </Button>
-      </Form>
-      <Button color='primary' onPress={() => startScan((dev: BleDevice[]) => test(dev), 10_000)}>
-        Print Device
-      </Button>
-      <Button color='primary' onPress={tryConnection}>
-        connect
-      </Button>
-      <Button color='primary' onPress={tryDisconnection}>
-        disconnect
-      </Button>
-      <div className='flex space-x-4'>
-        <Button color='primary' onPress={() => controlLed(TURN_ON)}>
-          Led ON
-        </Button>
-        <Button color='primary' onPress={() => controlLed(TURN_OFF)}>
-          Led OFF
-        </Button>
-        <Button color='primary' onPress={() => controlLed(SET_RED)}>
-          RED
-        </Button>
-        <Button color='primary' onPress={() => controlLed(SET_GREEN)}>
-          GREEN
-        </Button>
-        <Button color='primary' onPress={() => controlLed(SET_BLUE)}>
-          BLUE
-        </Button>
-        <Button color='primary' onPress={() => controlLed(BRIGHTNESS_UP)}>
-          MAX_BRIGHT
-        </Button>
-        <Button color='primary' onPress={() => controlLed(BRIGHTNESS_DOWN)}>
-          MIN_BRIGHT
-        </Button>
-        <Button color='primary' onPress={() => controlLed(LED)}>
-          SET_LED
-        </Button>
-        <Button color='primary' onPress={() => controlLed(SECTION)}>
-          SET_SECTION
-        </Button>
-        <Button color='primary' onPress={() => controlLed(WS2812B)}>
-          WS2812B
-        </Button>
-        <Button color='primary' onPress={() => controlLed(CMD_SET_RGB_SEQ)}>
-          RGB SEQ
-        </Button>
+            <Button color='primary' onPress={submitGitLabToken} isDisabled={!gitlabToken}>
+              Save GitLab Token
+            </Button>
+          </CardBody>
+        </Card>
       </div>
     </div>
   );

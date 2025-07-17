@@ -1,12 +1,8 @@
-import React from 'react';
 import {
   Card,
   CardBody,
   Button,
   Input,
-  Spinner,
-  Chip,
-  Tooltip,
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
@@ -22,10 +18,10 @@ import { getConnectionUpdates } from '@mnlphlp/plugin-blec';
 import { addToast } from '@heroui/react';
 import { connect, disconnect } from '@mnlphlp/plugin-blec';
 import { bleError } from '../utils/error';
-import { setLedBrightness } from '../utils/led-control';
+import { setLedsBrightness, setLedsOnOff as sendLedsOnOff } from '../utils/led-control';
 export function LEDStripManager() {
   const [ledCount, setLedCount] = useState(60);
-  const [autoConnect, setAutoConnect] = useState(false);
+  const [ledsOnOff, setLedsOnOff] = useState<boolean>(true);
 
   const scanForStrip = useLedStripStore((state) => state.scanForStrip);
   const ledStrips = useLedStripStore((state) => state.ledStrips);
@@ -35,6 +31,7 @@ export function LEDStripManager() {
   const updateSelectedStrip = useLedStripStore((state) => state.updateSelectedStrip);
   const setBrightness = useLedStripStore((state) => state.setBrightness);
   const brightness = useLedStripStore((state) => state.brightness);
+
   useEffect(() => {
     getConnectionUpdates((state) => {
       if (state) {
@@ -48,16 +45,21 @@ export function LEDStripManager() {
       }
     });
   }, []);
+
   useEffect(() => {
-    setLedBrightness(brightness as number);
+    setLedsBrightness(brightness as number);
   }, [brightness]);
+
+  useEffect(() => {
+    sendLedsOnOff(ledsOnOff);
+  }, [ledsOnOff]);
+
   const handleConnect = async () => {
     if (!selectedStrip) return;
     try {
       await connect(selectedStrip.address, () => {});
     } catch (error: unknown) {
-      const message = String(error);
-      bleError(message);
+      bleError(error);
     }
   };
 
@@ -66,128 +68,129 @@ export function LEDStripManager() {
       await disconnect();
       bleError('Led Disconected');
     } catch (error: unknown) {
-      const message = String(error);
-      bleError(message);
+      bleError(error);
     } finally {
       updateSelectedStrip({ isConnected: false });
     }
   };
 
   return (
-    <Card className='max-w-2xl mx-auto'>
-      <CardBody className='space-y-6'>
-        <h2 className='text-2xl font-semibold'>LED Strip Manager</h2>
+    <div className='flex justify-center px-4'>
+      <Card className='w-full max-w-3xl mx-auto '>
+        <CardBody className='space-y-6 flex flex-col items-center'>
+          <h2 className='text-2xl font-semibold'>LED Strip Manager</h2>
 
-        <div className='flex items-center gap-4'>
-          <Dropdown>
-            <DropdownTrigger>
-              <Button
-                variant='flat'
-                color='primary'
-                startContent={<Icon icon='lucide:bluetooth' />}
-                endContent={<Icon icon='lucide:chevron-down' />}
-              >
-                {selectedStrip ? selectedStrip.name : 'Select LED Strip'}
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu aria-label='LED Strip Selection'>
-              {ledStrips.map((strip) => (
-                <DropdownItem
-                  key={strip.address}
-                  startContent={
-                    <Icon
-                      icon={strip.isConnected ? 'lucide:wifi' : 'lucide:wifi-off'}
-                      className={strip.isConnected ? 'text-success' : 'text-danger'}
-                    />
-                  }
-                  onPress={() => setSelectedStrip(strip)}
+          <div className='flex items-center justify-center gap-4 w-full'>
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  variant='flat'
+                  color='primary'
+                  startContent={<Icon icon='lucide:bluetooth' />}
+                  endContent={<Icon icon='lucide:chevron-down' />}
                 >
-                  {strip.name}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
+                  {selectedStrip ? selectedStrip.name : 'Select LED Strip'}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label='LED Strip Selection'>
+                {ledStrips.map((strip) => (
+                  <DropdownItem
+                    key={strip.address}
+                    startContent={
+                      <Icon
+                        icon={strip.isConnected ? 'lucide:wifi' : 'lucide:wifi-off'}
+                        className={strip.isConnected ? 'text-success' : 'text-danger'}
+                      />
+                    }
+                    onPress={() => setSelectedStrip(strip)}
+                  >
+                    {strip.name}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
 
-          <Button
-            color='primary'
-            startContent={
-              <Icon
-                icon={isScanning ? 'lucide:loader-2' : 'lucide:search'}
-                className={isScanning ? 'animate-spin' : ''}
-              />
-            }
-            onPress={scanForStrip}
-            isDisabled={isScanning}
-          >
-            {isScanning ? 'Scanning...' : 'Scan'}
-          </Button>
-        </div>
-
-        {selectedStrip && (
-          <div className='space-y-4'>
-            <div className='flex items-center justify-between'>
-              <span className='text-default-600'>Connection Status:</span>
-              <div className='flex items-center gap-2'>
-                <span className={selectedStrip.isConnected ? 'text-success' : 'text-danger'}>
-                  {selectedStrip.isConnected ? 'Connected' : 'Disconnected'}
-                </span>
+            <Button
+              color='primary'
+              startContent={
                 <Icon
-                  icon={selectedStrip.isConnected ? 'lucide:wifi' : 'lucide:wifi-off'}
-                  className={selectedStrip.isConnected ? 'text-success' : 'text-danger'}
+                  icon={isScanning ? 'lucide:loader-2' : 'lucide:search'}
+                  className={isScanning ? 'animate-spin' : ''}
+                />
+              }
+              onPress={scanForStrip}
+              isDisabled={isScanning}
+            >
+              {isScanning ? 'Scanning...' : 'Scan'}
+            </Button>
+          </div>
+
+          {selectedStrip && (
+            <div className='space-y-4 w-full max-w-md'>
+              <div className='flex items-center justify-between'>
+                <span className='text-default-600'>Connection Status:</span>
+                <div className='flex items-center gap-2'>
+                  <span className={selectedStrip.isConnected ? 'text-success' : 'text-danger'}>
+                    {selectedStrip.isConnected ? 'Connected' : 'Disconnected'}
+                  </span>
+                  <Icon
+                    icon={selectedStrip.isConnected ? 'lucide:wifi' : 'lucide:wifi-off'}
+                    className={selectedStrip.isConnected ? 'text-success' : 'text-danger'}
+                  />
+                </div>
+              </div>
+
+              <Button
+                color={selectedStrip.isConnected ? 'danger' : 'primary'}
+                variant='flat'
+                startContent={
+                  <Icon icon={selectedStrip.isConnected ? 'lucide:power-off' : 'lucide:plug'} />
+                }
+                onPress={selectedStrip.isConnected ? handleDisconnect : handleConnect}
+                className='w-full'
+              >
+                {selectedStrip.isConnected ? 'Disconnect' : 'Connect to LED Strip'}
+              </Button>
+
+              <div>
+                <Slider
+                  label='Brightness'
+                  step={1}
+                  defaultValue={brightness}
+                  maxValue={255}
+                  minValue={0}
+                  onChangeEnd={(value) => setBrightness(value as number)}
+                  className='max-w-md'
+                />
+              </div>
+
+              <Input
+                type='number'
+                label='Number of LEDs'
+                placeholder='Enter the number of LEDs'
+                value={ledCount.toString()}
+                onValueChange={(value) => setLedCount(Number.parseInt(value) || 0)}
+                disabled={!selectedStrip.isConnected}
+                startContent={
+                  <Icon
+                    icon='lucide:lightbulb'
+                    className='text-default-400 pointer-events-none flex-shrink-0'
+                  />
+                }
+              />
+
+              <div className='flex justify-between items-center'>
+                <span className='text-default-600'>LEDS ON/OFF</span>
+                <Switch
+                  isSelected={ledsOnOff}
+                  onValueChange={setLedsOnOff}
+                  disabled={!selectedStrip.isConnected}
                 />
               </div>
             </div>
-
-            <Button
-              color={selectedStrip.isConnected ? 'danger' : 'primary'}
-              variant='flat'
-              startContent={
-                <Icon icon={selectedStrip.isConnected ? 'lucide:power-off' : 'lucide:plug'} />
-              }
-              onPress={selectedStrip.isConnected ? handleDisconnect : handleConnect}
-              className='w-full'
-            >
-              {selectedStrip.isConnected ? 'Disconnect' : 'Connect to LED Strip'}
-            </Button>
-
-            <div>
-              <Slider
-                label='Brightness'
-                step={1}
-                defaultValue={brightness}
-                maxValue={255}
-                minValue={0}
-                onChangeEnd={(value) => setBrightness(value as number)}
-                className='max-w-md'
-              />
-            </div>
-
-            <Input
-              type='number'
-              label='Number of LEDs'
-              placeholder='Enter the number of LEDs'
-              value={ledCount.toString()}
-              onValueChange={(value) => setLedCount(Number.parseInt(value) || 0)}
-              disabled={!selectedStrip.isConnected}
-              startContent={
-                <Icon
-                  icon='lucide:lightbulb'
-                  className='text-default-400 pointer-events-none flex-shrink-0'
-                />
-              }
-            />
-
-            <div className='flex justify-between items-center'>
-              <span className='text-default-600'>Auto-connect on startup</span>
-              <Switch
-                isSelected={autoConnect}
-                onValueChange={setAutoConnect}
-                disabled={!selectedStrip.isConnected}
-              />
-            </div>
-          </div>
-        )}
-      </CardBody>
-    </Card>
+          )}
+        </CardBody>
+      </Card>
+    </div>
   );
 }
