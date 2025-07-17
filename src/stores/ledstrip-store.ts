@@ -25,7 +25,7 @@ interface LEDStripState {
 }
 
 export const useLedStripStore = create<LEDStripState>()(
-  immer((set, get) => ({
+  immer((set) => ({
     isScanning: false,
     ledStrips: [],
     selectedStrip: undefined,

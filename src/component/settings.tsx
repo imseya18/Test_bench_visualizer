@@ -42,20 +42,28 @@ export function Settings() {
         <Card>
           <CardBody className='space-y-6'>
             <h2 className='text-xl font-semibold'>GitLab Configuration</h2>
-
-            <Input
-              label='GitLab API Token'
-              placeholder='Enter your GitLab API token'
-              type='password'
-              value={gitlabToken}
-              onValueChange={setGitlabToken}
-              startContent={
+            <div className='flex flex-row'>
+              <Input
+                label='GitLab API Token'
+                placeholder='Enter your GitLab API token'
+                type='password'
+                value={gitlabToken}
+                onValueChange={setGitlabToken}
+                startContent={
+                  <Icon
+                    icon='logos:gitlab'
+                    className='text-default-400 pointer-events-none flex-shrink-0'
+                  />
+                }
+              />
+              <Button isIconOnly className='h-14 w-16 ml-3 2xl:hidden'>
                 <Icon
-                  icon='logos:gitlab'
-                  className='text-default-400 pointer-events-none flex-shrink-0'
+                  icon='material-symbols:qr-code'
+                  style={{ fontSize: '24px' }}
+                  onClick={QrCodePress}
                 />
-              }
-            />
+              </Button>
+            </div>
             <Button color='primary' onPress={submitGitLabToken} isDisabled={!gitlabToken}>
               Save GitLab Token
             </Button>

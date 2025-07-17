@@ -1,9 +1,9 @@
 import { addToast } from '@heroui/react';
 
-export function gitlabError(error: string) {
-  let errorMessage = String('');
+export function gitlabError(error: unknown) {
+  let errorMessage = String(error);
 
-  if (error.includes('401')) {
+  if (errorMessage.includes('401')) {
     errorMessage = '401 unauthorized: change or set your API token';
   }
 

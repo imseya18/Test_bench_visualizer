@@ -83,10 +83,9 @@ export const useGitLabStore = create<GitLabSlice>()(
           });
         }
       } catch (error: unknown) {
-        const message = String(error);
-        gitlabError(message);
+        gitlabError(error);
         set((draft) => {
-          draft.error = message;
+          draft.error = String(error);
         });
       } finally {
         set((draft) => {
