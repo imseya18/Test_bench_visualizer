@@ -9,8 +9,11 @@ import { PipelineDetailsWrapper } from './component/pipeline-board';
 import { useGitLabStore } from './stores/gitlab-store';
 import { useJsonStore } from './stores/json-store';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-
+import { LEDStripManager } from './component/led-manager';
 const ONE_HOUR = 3_600_000;
+const ROWS = 3;
+const COLUMNS = 5;
+export const CARD_SPOT_NUMBER = ROWS * COLUMNS;
 function App() {
   const fetchGitLabData = useGitLabStore((s) => s.fetchGitLabData);
   const fetchBoards = useJsonStore((s) => s.fetchBoards);
@@ -35,9 +38,10 @@ function App() {
           <div className='flex-1 flex min-h-0'>
             <Routes>
               <Route path='/' element={<Dashboard />} />
-              <Route path='/board' element={<DeviceGrid rows={3} columns={5} />} />
+              <Route path='/board' element={<DeviceGrid rows={ROWS} columns={COLUMNS} />} />
               <Route path='/Settings' element={<Settings />} />
               <Route path='/pipelines' element={<PipelineDetailsWrapper />} />
+              <Route path='/bluetooth' element={<LEDStripManager />} />
             </Routes>
           </div>
         </div>

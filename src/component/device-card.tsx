@@ -17,10 +17,13 @@ import { useNavigate } from 'react-router-dom';
 import { useGitLabStore } from '../stores/gitlab-store';
 import { ChooseCard } from './choose-card';
 import { CardProgressBar } from './card-progress-bar';
-import { getStatusColor, getJobTypeStatus } from '../utils/job-utilities';
+import { getStatusColor, getJobTypeStatus, getStatusLedColor } from '../utils/job-utilities';
 import { CARD_TYPE_ARRAY } from '../utils/global-variable';
 import { CardType } from '../utils/global-variable';
 import { Skeleton } from '@heroui/skeleton';
+import { useEffect } from 'react';
+import { setLedColors } from '../utils/led-control';
+import { LED_COLOR } from '../utils/job-utilities';
 
 export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
   const useGetCard = useCardStore((state) => state.getCard);
@@ -31,11 +34,28 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
   const updateCard = (patch: Partial<CardPropreties>) => {
     useUpdateCard(id, patch);
   };
+  const type = card?.type;
+  const pipelinesRecord = type && gitLabData?.[type] ? gitLabData[type] : {};
+  const pipelineList = Object.values(pipelinesRecord);
+  const latestPipeline = pipelineList.at(-1);
+  const status = latestPipeline
+    ? getJobTypeStatus(latestPipeline, ['build', 'test', 'test_offline'])
+    : undefined;
+  const borederColor = status ? getStatusColor(status) : undefined;
+  const isLoading = useGitLabStore((state) => state.isLoading);
+  const date = latestPipeline ? new Date(latestPipeline.updated_at) : undefined;
+
+  useEffect(() => {
+    if (!card || !status) {
+      setLedColors(onBoardPosition, LED_COLOR.black);
+      return;
+    }
+
+    const ledColor = getStatusLedColor(status);
+    setLedColors(onBoardPosition, ledColor);
+  }, [borederColor]);
   if (!card) return;
 
-  const { type } = card;
-  const pipelinesRecord = useGitLabStore((state) => state.gitLabData[type as string]);
-  const isLoading = useGitLabStore((state) => state.isLoading);
   const openPipelineDetails = (deviceId: string, deviceName: string) => {
     navigate('/pipelines', {
       state: {
@@ -47,6 +67,7 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
   };
 
   if (!type) {
+    setLedColors(onBoardPosition, LED_COLOR.black);
     return (
       <Card
         isPressable={false}
@@ -69,9 +90,8 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
     );
   }
 
-  const pipeline = Object.values(pipelinesRecord ?? {});
-  const lastestPipeline = pipeline.at(-1);
-  if (!lastestPipeline) {
+  if (!latestPipeline) {
+    setLedColors(onBoardPosition, LED_COLOR.black);
     return (
       <Card
         isPressable={false}
@@ -85,9 +105,7 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
       </Card>
     );
   }
-  const status = getJobTypeStatus(lastestPipeline, ['build', 'test', 'test_offline']);
-  const borederColor = getStatusColor(status);
-  const date = new Date(lastestPipeline.updated_at);
+
   return (
     <Card
       className={`flex flex-col h-full border-${borederColor} border-1 cursor-pointer`}
@@ -131,26 +149,26 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
         {/* Build Result */}
         <CardProgressBar
           type={'build'}
-          pipelineJobs={lastestPipeline}
-          pipelineStatus={lastestPipeline.status}
+          pipelineJobs={latestPipeline}
+          pipelineStatus={latestPipeline.status}
         />
         {/* test Result */}
         <CardProgressBar
           type={'test'}
-          pipelineJobs={lastestPipeline}
-          pipelineStatus={lastestPipeline.status}
+          pipelineJobs={latestPipeline}
+          pipelineStatus={latestPipeline.status}
         />
         {/* test-offiline Result */}
         <CardProgressBar
           type={'test_offline'}
-          pipelineJobs={lastestPipeline}
-          pipelineStatus={lastestPipeline.status}
+          pipelineJobs={latestPipeline}
+          pipelineStatus={latestPipeline.status}
         />
       </CardBody>
       <CardFooter className='p-2 border-t border-content2 justify-between'>
         <div className='flex items-center'>
           <Icon icon='icon-park-outline:branch-two' className='text-default-400 mr-1' />
-          <span className='text-tiny text-default-400'>{Number(lastestPipeline.id)}</span>
+          <span className='text-tiny text-default-400'>{Number(latestPipeline.id)}</span>
         </div>
         <span className='text-tiny text-default-400'>{date.toLocaleDateString('fr-FR')}</span>
       </CardFooter>

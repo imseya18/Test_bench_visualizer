@@ -55,7 +55,7 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
   const pipelines = useMemo(
     () =>
       isLoading && Object.keys(pipelinesRecord).length === 0
-        ? [] // pendant le chargement, un tableau vide
+        ? [] // empty tab while loading
         : Object.values(pipelinesRecord),
     [isLoading, pipelinesRecord],
   );
@@ -75,11 +75,6 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
     );
   }
 
-  //   const formatDuration = (seconds: number) => {
-  //     const minutes = Math.floor(seconds / 60);
-  //     const remainingSeconds = seconds % 60;
-  //     return `${minutes}m ${remainingSeconds}s`;
-  //   };
 
   return pipelines ? (
     <div className='fixed inset-0 bg-content1 z-50 overflow-auto'>
@@ -98,12 +93,6 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
               <p className='text-default-500'>Pipeline History</p>
             </div>
           </div>
-          {/* Periode selecteur */}
-          {/* <Select className='max-w-xs' label='Select a period'>
-            {day.map((day) => (
-              <SelectItem key={day.key}>{day.label}</SelectItem>
-            ))}
-          </Select> */}
           <div className='flex items-center gap-3'>
             <Button color='primary' startContent={<Icon icon='lucide:play' />}>
               Run Pipeline
@@ -211,9 +200,6 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                                           />
                                           <div>
                                             <div className='font-medium'>{job.name}</div>
-                                            {/* <div className="text-tiny text-default-500">
-                                        Duration: {formatDuration(job.duration)}
-                                      </div> */}
                                           </div>
                                         </div>
                                         <div className='flex items-center gap-2'>
@@ -228,16 +214,6 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                                               <Icon icon='lucide:file-text' size={18} />
                                             </Button>
                                           </Tooltip>
-                                          {/* <Tooltip content='Retry Job'>
-                                        <Button
-                                          isIconOnly
-                                          variant='light'
-                                          size='sm'
-                                          isDisabled={job.status === 'running'}
-                                        >
-                                          <Icon icon='lucide:refresh-cw' size={18} />
-                                        </Button>
-                                      </Tooltip> */}
                                         </div>
                                       </div>
                                       <div className='text-red-400 text-sm text-left w-full mt-2'>
