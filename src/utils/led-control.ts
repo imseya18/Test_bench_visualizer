@@ -9,18 +9,6 @@ const CMD_SET_LEDS_ON = 0x03;
 const CMD_SET_LEDS_OFF = 0x04;
 const UUID_LED_CONTROL = 'b18d531d-0d2e-4315-b253-677c0b9bdf72';
 
-export const TURN_ON = new Uint8Array([START_FLAG, 0x00, 0x00, 0x00, 0x00, 0x03, END_FLAG]);
-export const TURN_OFF = new Uint8Array([START_FLAG, 0x00, 0x00, 0x00, 0x00, 0x04, END_FLAG]);
-export const SET_BLUE = new Uint8Array([START_FLAG, 0x00, 0x00, 0x00, 0xff, 0x01, END_FLAG]);
-export const SET_RED = new Uint8Array([START_FLAG, 0x00, 0xff, 0x00, 0x00, 0x01, END_FLAG]);
-export const SET_GREEN = new Uint8Array([START_FLAG, 0x00, 0x00, 0xff, 0x00, 0x01, END_FLAG]);
-export const BRIGHTNESS_UP = new Uint8Array([START_FLAG, 0x00, 0xff, 0x00, 0x00, 0x02, END_FLAG]);
-export const BRIGHTNESS_DOWN = new Uint8Array([START_FLAG, 0x00, 0x00, 0x00, 0x00, 0x02, END_FLAG]);
-export const LED = new Uint8Array([START_FLAG, 0x04, 0x00, 0x00, 0x00, 0x3c, END_FLAG]);
-export const SECTION = new Uint8Array([START_FLAG, 0x04, 0x00, 0x00, 0x2e, END_FLAG]);
-export const WS2812B = new Uint8Array([START_FLAG, 0x03, 0x00, 0x00, 0x1c, END_FLAG]);
-export const CMD_SET_RGB_SEQ = new Uint8Array([START_FLAG, 0x00, 0x00, 0x00, 0x10, END_FLAG]);
-
 export async function setLedColors(cardPosition: number, ledColor: RGB) {
   console.log('payload sent on cardPosition:', cardPosition);
   const payload = new Uint8Array([
