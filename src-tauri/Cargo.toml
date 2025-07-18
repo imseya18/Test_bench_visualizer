@@ -30,11 +30,8 @@ gitlab = "0.1801.0"
 tokio = "1.45.0"
 chrono = "0.4.41"
 ts-rs = "10.1.0"
-<<<<<<< HEAD
 futures = "0.3.31"
-=======
 tauri-plugin-blec = "0.5.3"
->>>>>>> Led
 
 [target.'cfg(any(target_os = "android", target_os = "ios"))'.dependencies]
 tauri-plugin-barcode-scanner = "2"
