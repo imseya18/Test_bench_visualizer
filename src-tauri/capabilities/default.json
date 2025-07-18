@@ -8,6 +8,8 @@
     "opener:default",
     "stronghold:default",
     "fs:default",
-    "store:default"
+    "store:default",
+    "blec:default",
+    "blec:allow-check-permissions"
   ]
 }

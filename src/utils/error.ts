@@ -1,9 +1,9 @@
 import { addToast } from '@heroui/react';
 
-export function gitlabError(error: string) {
-  let errorMessage = String('');
+export function gitlabError(error: unknown) {
+  let errorMessage = String(error);
 
-  if (error.includes('401')) {
+  if (errorMessage.includes('401')) {
     errorMessage = '401 unauthorized: change or set your API token';
   }
 
@@ -15,11 +15,22 @@ export function gitlabError(error: string) {
   });
 }
 
-export function storeError(error: string) {
+export function storeError(error: unknown) {
+  const message = String(error);
   addToast({
     title: 'store Error',
     color: 'danger',
-    description: error,
+    description: message,
+    timeout: 3000,
+  });
+}
+
+export function bleError(error: unknown) {
+  const message = String(error);
+  addToast({
+    title: 'BLE Error',
+    color: 'danger',
+    description: message,
     timeout: 3000,
   });
 }
