@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Input, Button, Card, CardBody } from '@heroui/react';
+import { Input, Button, Card, CardBody, Divider } from '@heroui/react';
 import { invoke } from '@tauri-apps/api/core';
 import { Icon } from '@iconify/react';
 import {
@@ -11,7 +11,6 @@ import {
 } from '@tauri-apps/plugin-barcode-scanner';
 import { gitlabError } from '../utils/error';
 import { LEDStripManager } from './led-manager';
-import { Divider } from '@heroui/divider';
 const QrCodePress = async () => {
   const permission = await checkPermissions();
   if (permission === 'prompt') await requestPermissions();

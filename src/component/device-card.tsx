@@ -170,7 +170,9 @@ export function DeviceCard({ id, onBoardPosition }: CardPropreties) {
           <Icon icon='icon-park-outline:branch-two' className='text-default-400 mr-1' />
           <span className='text-tiny text-default-400'>{Number(latestPipeline.id)}</span>
         </div>
-        <span className='text-tiny text-default-400'>{date.toLocaleDateString('fr-FR')}</span>
+        {date && (
+          <span className='text-tiny text-default-400'>{date.toLocaleDateString('fr-FR')}</span>
+        )}
       </CardFooter>
     </Card>
   );
