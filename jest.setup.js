@@ -1,6 +1,10 @@
 /* global jest */
 jest.mock('@tauri-apps/api/path', () => ({
-  resourceDir: jest.fn().mockResolvedValue('/fake/dir'),
+  appDataDir: jest.fn().mockResolvedValue('/fake/dir'),
+}));
+
+jest.mock('@/stores/store-constant', () => ({
+  getStorePath: () => Promise.resolve('/fake/dir/json/store.json'),
 }));
 
 jest.mock('@tauri-apps/plugin-store', () => ({
