@@ -24,7 +24,6 @@
     }
   },
   "bundle": {
-    "resources": ["json/*"],
     "active": true,
     "targets": "all",
     "icon": [

@@ -6,6 +6,7 @@ mod models;
 mod services;
 use models::{enums::ProjectId, response::ByCardsResponse};
 use services::gitlab_services::{get_project_pipelines, build_front_response_concurrency};
+use std::fs;
 
 #[derive(Default)]
 struct AppState {
@@ -22,7 +23,7 @@ fn set_api_key(
     state_guard.gitlab_token = token.to_string();
     let resource_path = app
         .path()
-        .resolve("json/store.json", BaseDirectory::Resource)
+        .resolve("json/store.json", BaseDirectory::AppData)
         .map_err(|e| e.to_string())?;
     let store = app.store(resource_path).map_err(|e| e.to_string())?;
     store.set("GITLAB_TOKEN", token);
@@ -87,7 +88,12 @@ pub fn run() {
         .setup(|app| {
             let resource_path = app
                 .path()
-                .resolve("json/store.json", BaseDirectory::Resource)?;
+                .resolve("json/store.json", BaseDirectory::AppData)?;
+
+            if let Some(parent_dir) = resource_path.parent() {
+                fs::create_dir_all(parent_dir).map_err(|e| e.to_string())?;
+            }
+
             let store = app.store(resource_path).map_err(|e| e.to_string())?;
             app.manage(RwLock::new(AppState::default()));
             if let Some(token) = store.get("GITLAB_TOKEN") {

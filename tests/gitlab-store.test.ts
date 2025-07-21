@@ -1,3 +1,5 @@
+/* eslint-disable unicorn/prefer-module */
+/* eslint-disable @typescript-eslint/no-require-imports */
 // tests/gitlab-store.test.ts
 import { act } from 'react';
 import { useGitLabStore } from '../src/stores/gitlab-store';

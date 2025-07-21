@@ -75,7 +75,6 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
     );
   }
 
-
   return pipelines ? (
     <div className='fixed inset-0 bg-content1 z-50 overflow-auto'>
       <div className='p-6'>
@@ -83,7 +82,7 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
         <div className='flex items-center justify-between mb-6'>
           <div className='flex items-center gap-3'>
             <Button isIconOnly variant='light' onPress={onClose} className='text-default-500'>
-              <Icon icon='lucide:arrow-left' size={20} />
+              <Icon icon='lucide:arrow-left' height={20} />
             </Button>
             <div>
               <h1 className='text-2xl font-bold flex items-center gap-2'>
@@ -123,7 +122,7 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                               ? 'text-success'
                               : `text-${getStatusColor(pipeline.status as JobStatus)}`
                           }
-                          size={20}
+                          height={15}
                         />
                         <div>
                           <div className='font-semibold'>{pipeline.title}</div>
@@ -187,7 +186,7 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                                         checkError && 'border-1 border-red-500'
                                       }`}
                                     >
-                                      <div className='flex items-center'>
+                                      <div className='flex items-center w-full'>
                                         <div className='flex items-center gap-3'>
                                           <Icon
                                             icon={getStatusIcon(job.status as JobStatus)}
@@ -202,16 +201,17 @@ export function PipelineDetails({ deviceName, onClose }: PipelineDetailsProps) {
                                             <div className='font-medium'>{job.name}</div>
                                           </div>
                                         </div>
-                                        <div className='flex items-center gap-2'>
+                                        <div className='flex items-center gap-2 ml-auto'>
                                           {job.tests_report && (
                                             <div className='text-small text-default-500'>
                                               {job.tests_report?.success_count.toString()}/
                                               {job.tests_report?.total_count.toString()}
                                             </div>
                                           )}
+
                                           <Tooltip content='View Logs'>
                                             <Button isIconOnly variant='light' size='sm'>
-                                              <Icon icon='lucide:file-text' size={18} />
+                                              <Icon icon='lucide:file-text' height={15} />
                                             </Button>
                                           </Tooltip>
                                         </div>

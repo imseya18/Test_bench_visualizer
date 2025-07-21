@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable unicorn/no-useless-undefined */
 // tests/jsonStore.test.ts
 import { act } from 'react';
 import { useJsonStore, BoardProperties } from '../src/stores/json-store';
@@ -39,8 +41,8 @@ describe('useJsonStore', () => {
       save: jest.fn().mockResolvedValue(undefined),
     };
 
-    // Mock resourceDir to return a dummy path
-    (tauriPath.resourceDir as jest.Mock).mockResolvedValue('/fake/dir');
+    // Mock appDataDir to return a dummy path
+    (tauriPath.appDataDir as jest.Mock).mockResolvedValue('/fake/dir');
 
     // Mock load(...) to return our fakeStore
     (pluginStore.load as jest.Mock).mockResolvedValue(fakeStore);

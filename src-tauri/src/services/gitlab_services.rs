@@ -1,5 +1,5 @@
 use super::utils::extract_card_and_job_type;
-use crate::models::api_struct::{Job, Pipeline, TestReport, TestSuite};
+use crate::models::api_struct::{Job, Pipeline, TestReport};
 use crate::models::enums::ProjectId;
 use crate::models::response::ByCardsResponse;
 use chrono::{Days, Utc};

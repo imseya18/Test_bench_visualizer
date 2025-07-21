@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ByCardsResponse } from '../../src/bindings/ByCardsResponse';
 import { JobBuilder } from './job-builder';
 import { PipelineJobsResponseBuilder } from './pipelineJobResponse-builder';

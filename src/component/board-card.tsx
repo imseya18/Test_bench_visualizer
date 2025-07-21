@@ -38,7 +38,7 @@ export function BoardCard(board: BoardProperties) {
                   })}
               </div>
             ) : (
-              <Icon icon='lucide:layout-grid' size={48} className='text-default-300' />
+              <Icon icon='lucide:layout-grid' height={48} className='text-default-300' />
             )}
           </div>
         </div>
@@ -48,14 +48,14 @@ export function BoardCard(board: BoardProperties) {
           <p className='text-default-500 text-small mb-3'>{board.description}</p>
           <div className='flex justify-between items-center'>
             <div className='flex items-center gap-1'>
-              <Icon icon='lucide:cpu' size={16} className='text-default-500' />
+              <Icon icon='lucide:cpu' height={16} className='text-default-500' />
               <span className='text-small'>
                 {board.activeDevices}/{board.deviceCount} devices
               </span>
             </div>
             <Tooltip content={board.lastUpdated.toLocaleString()}>
               <div className='flex items-center gap-1 text-default-500'>
-                <Icon icon='lucide:clock' size={14} />
+                <Icon icon='lucide:clock' height={14} />
                 <span className='text-tiny'>{formatRelativeTime(board.lastUpdated)}</span>
               </div>
             </Tooltip>
@@ -67,7 +67,7 @@ export function BoardCard(board: BoardProperties) {
           size='sm'
           variant='flat'
           color='danger'
-          startContent={<Icon icon='lucide:delete' size={16} />}
+          startContent={<Icon icon='lucide:delete' height={16} />}
           onPress={onOpen}
         >
           Delete
@@ -100,7 +100,7 @@ export function BoardCard(board: BoardProperties) {
           size='sm'
           color='primary'
           variant='flat'
-          startContent={<Icon icon='lucide:external-link' size={16} />}
+          startContent={<Icon icon='lucide:external-link' height={16} />}
           onPress={() => goToSelectedBoards(board.cards)}
         >
           Open
