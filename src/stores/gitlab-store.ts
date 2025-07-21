@@ -3,12 +3,11 @@ import { immer } from 'zustand/middleware/immer';
 import { ByCardsResponse } from '../bindings/ByCardsResponse';
 import { PipelineJobsResponse } from '../bindings/PipelineJobsResponse';
 import { BranchName } from '../utils/global-variable';
-import { resourceDir } from '@tauri-apps/api/path';
 import { load } from '@tauri-apps/plugin-store';
 import { invoke } from '@tauri-apps/api/core';
 import { gitlabError } from '../utils/error';
 import { addToast } from '@heroui/react';
-
+import { getStorePath } from './store-constant';
 type GitLabSlice = {
   gitLabCache: Record<BranchName, ByCardsResponse>;
   gitLabData: ByCardsResponse;
@@ -58,8 +57,8 @@ export const useGitLabStore = create<GitLabSlice>()(
       });
       console.log('api call start');
       try {
-        const dir = await resourceDir();
-        const store = await load(dir + '/json/store.json', { autoSave: true });
+        const store_path = await getStorePath();
+        const store = await load(store_path, { autoSave: true });
         const result = await invoke<ByCardsResponse>('test_api_call', {
           branch_name: branchName,
           since_days: sinceDays,
@@ -95,8 +94,8 @@ export const useGitLabStore = create<GitLabSlice>()(
     },
 
     getCachedGitLabData: async () => {
-      const dir = await resourceDir();
-      const store = await load(dir + '/json/store.json', { autoSave: true });
+      const store_path = await getStorePath();
+      const store = await load(store_path, { autoSave: true });
       const cachedApiCall =
         (await store.get<Record<BranchName, ByCardsResponse>>('gitLabData')) ?? {};
 
