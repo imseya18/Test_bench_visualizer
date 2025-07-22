@@ -9,6 +9,7 @@ import {
   //   Button,
   DropdownMenu,
   DropdownItem,
+  Skeleton,
 } from '@heroui/react';
 import { Icon } from '@iconify/react';
 import { CardPropreties } from '../stores/card-store';
@@ -20,7 +21,6 @@ import { CardProgressBar } from './card-progress-bar';
 import { getStatusColor, getJobTypeStatus, getStatusLedColor } from '../utils/job-utilities';
 import { CARD_TYPE_ARRAY } from '../utils/global-variable';
 import { CardType } from '../utils/global-variable';
-import { Skeleton } from '@heroui/skeleton';
 import { useEffect } from 'react';
 import { setLedColors } from '../utils/led-control';
 import { LED_COLOR } from '../utils/job-utilities';

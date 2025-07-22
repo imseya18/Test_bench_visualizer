@@ -1,4 +1,4 @@
-import { PipelineJobsResponse } from '../src/bindings/PipelineJobsResponse';
+import { PipelineJobsResponse } from '../../src/bindings/PipelineJobsResponse';
 import { JobBuilder } from '././job-builder';
 
 export class PipelineJobsResponseBuilder {

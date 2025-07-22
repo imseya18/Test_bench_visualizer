@@ -2,10 +2,9 @@ import { CardPropreties } from './card-store';
 import { immer } from 'zustand/middleware/immer';
 import { create } from 'zustand';
 import { storeError } from '../utils/error';
-import { resourceDir } from '@tauri-apps/api/path';
 import { load } from '@tauri-apps/plugin-store';
 import { addToast } from '@heroui/react';
-
+import { getStorePath } from './store-constant';
 export type BoardProperties = {
   id: string;
   name: string;
@@ -52,8 +51,8 @@ export const useJsonStore = create<JsonSlice>()(
         state.jsonError = undefined;
       });
       try {
-        const dir = await resourceDir();
-        const store = await load(dir + '/json/store.json', { autoSave: true });
+        const store_path = await getStorePath();
+        const store = await load(store_path, { autoSave: true });
         const data = (await store.get<Record<string, BoardProperties>>('Boards')) ?? {};
         set((state) => {
           state.boards = data;
@@ -74,8 +73,8 @@ export const useJsonStore = create<JsonSlice>()(
     saveBoardToJson: async () => {
       const allBoards = get().boards;
       console.log('all board:', allBoards);
-      const dir = await resourceDir();
-      const store = await load(dir + '/json/store.json', { autoSave: true });
+      const store_path = await getStorePath();
+      const store = await load(store_path, { autoSave: true });
       await store.set('Boards', allBoards);
       await store.save();
     },

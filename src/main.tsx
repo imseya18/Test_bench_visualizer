@@ -1,7 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import App from './app';
-import { HeroUIProvider } from '@heroui/react';
-import { ToastProvider } from '@heroui/toast';
+import { HeroUIProvider, ToastProvider } from '@heroui/react';
 ReactDOM.createRoot(document.querySelector('#root') as HTMLElement).render(
   //   <React.StrictMode>
   <HeroUIProvider>
