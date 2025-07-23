@@ -77,9 +77,6 @@ unit_tests:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
-  tags:
-    - linux   # Overridden for Windows/macOS jobs
-
 # ----------------------------------
 #   Linux build (Ubuntu 22.04)
 # ----------------------------------
