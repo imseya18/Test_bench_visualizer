@@ -2,7 +2,7 @@
 #
 # Runners required:
 #   • Shared Linux Docker runner (image ubuntu:22.04)
-#   • Self‑hosted runners tagged “windows” and “macos” for the corresponding jobs
+#   • Self‑hosted or GitLab‑hosted runners tagged “windows” and “macos” for the corresponding jobs
 #
 # Adjust runner tags, Node/Rust/PNPM versions and any secret variables to suit your GitLab instance.
 
@@ -56,10 +56,10 @@ unit_tests:
   stage: build
   needs: ["unit_tests"]
   before_script:
-    # pnpm & dependencies
+    # --- PNPM & dependencies ---
     - corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
     - pnpm -v
-    # Rust + Tauri CLI
+    # --- Rust + Tauri CLI ---
     - curl https://sh.rustup.rs -sSf | sh -s -- -y
     - source "$HOME/.cargo/env"
     - cargo install tauri-cli --locked
@@ -77,6 +77,8 @@ unit_tests:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
+
+
 # ----------------------------------
 #   Linux build (Ubuntu 22.04)
 # ----------------------------------
@@ -92,22 +94,37 @@ build_tauri_linux:
     - pnpm install --frozen-lockfile
     - pnpm tauri build ${ARGS}
 
+
+
 # ----------------------------------
 #   Android build (APK + AAB)
 # ----------------------------------
 .build_android_template:
   extends: .build_template
-  image: ghcr.io/cirruslabs/android-sdk:34    #↳ Docker image with full Android SDK & NDK pre‑installed.
+  image: ghcr.io/cirruslabs/android-sdk:34    # Docker image with Android SDK & NDK pre‑installed.
   variables:
     ANDROID_HOME: /opt/android-sdk-linux
-    # Build all ABIs and generate both APKs and a release AAB.
+    # Build every ABI and generate both APK and release AAB.
     ARGS: "--ci --split-per-abi --apk --aab"
   before_script:
-    # Enable PNPM via Corepack and Rust mobile targets.
-    - corepack enable && corepack prepare pnpm@${PNPM_VERSION:-8} --activate
+    # === Install Node.js & PNPM ===
+    - apt-get update -y && apt-get install -y curl ca-certificates gnupg
+    - curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -
+    - apt-get install -y nodejs
+    - npm install -g pnpm@${PNPM_VERSION:-8}
+
+    # === Rust toolchain & Tauri CLI ===
+    - curl https://sh.rustup.rs -sSf | sh -s -- -y
+    - source "$HOME/.cargo/env"
+    - cargo install tauri-cli --locked
+
+    # === Mobile targets for Rust ===
     - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
-    # Accept Android SDK licences (non‑interactive).
+
+    # === Update PATH & accept Android licences ===
+    - export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
     - yes | sdkmanager --licenses
+
   script:
     - pnpm install --frozen-lockfile
     - pnpm tauri android build $ARGS
@@ -116,6 +133,8 @@ build_tauri_linux:
       - src-tauri/gen/android/app/build/outputs
     expire_in: 1 week
 
+
 build_tauri_android:
   extends: .build_android_template
   stage: build
+
