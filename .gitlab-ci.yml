@@ -1,0 +1,126 @@
+# .gitlab-ci.yml – Equivalent of GitHub Actions “Build-on-all-OS” workflow for a Tauri project
+#
+# Runners required:
+#   • Shared Linux Docker runner (image ubuntu:22.04)
+#   • Self‑hosted runners tagged “windows” and “macos” for the corresponding jobs
+#
+# Adjust runner tags, Node/Rust/PNPM versions and any secret variables to suit your GitLab instance.
+
+stages:
+  - test
+  - build
+
+variables:
+  NODE_VERSION: "20"          # LTS/* in GitHub Actions
+  PNPM_VERSION: "latest"
+  GIT_DEPTH: "0"             # keep full history (useful for changelogs)
+
+# ----------------------------------
+#   Unit tests (Linux Docker)
+# ----------------------------------
+unit_tests:
+  stage: test
+  image: node:${NODE_VERSION}
+  rules:
+    # Run when the same paths as the GitHub workflow are modified,
+    # or on Merge Requests against main / direct pushes to main.
+    - changes:
+        - src/**/*
+        - src-tauri/**/*
+        - tests/**/*
+        - package-lock.json
+        - src-tauri/Cargo.lock
+        - .github/workflows/test-build.yml
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+  before_script:
+    # Enable & install pnpm via Corepack (ships with Node ≥16.19)
+    - corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - ~/.local/share/pnpm
+      - node_modules/
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm jest
+  artifacts:
+    when: on_failure
+    reports:
+      junit: junit.xml
+
+# ----------------------------------
+#   Build template (shared steps)
+# ----------------------------------
+.build_template:
+  stage: build
+  needs: ["unit_tests"]
+  before_script:
+    # pnpm & dependencies
+    - corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+    - pnpm -v
+    # Rust + Tauri CLI
+    - curl https://sh.rustup.rs -sSf | sh -s -- -y
+    - source "$HOME/.cargo/env"
+    - cargo install tauri-cli --locked
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - ~/.cargo/registry
+      - ~/.cargo/git
+      - src-tauri/target/
+  artifacts:
+    when: always
+    paths:
+      - src-tauri/target/release/bundle/
+    expire_in: 1 week
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+  tags:
+    - linux   # Overridden for Windows/macOS jobs
+
+# ----------------------------------
+#   Linux build (Ubuntu 22.04)
+# ----------------------------------
+build_tauri_linux:
+  extends: .build_template
+  image: ubuntu:22.04
+  tags: [linux]
+  variables:
+    ARGS: ""
+  script:
+    # System dependencies for WebKitGTK (Tauri)
+    - apt-get update
+    - apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+    - pnpm install --frozen-lockfile
+    - pnpm tauri build ${ARGS}
+
+# ----------------------------------
+#   Android build (APK + AAB)
+# ----------------------------------
+.build_android_template:
+  extends: .build_template
+  image: ghcr.io/cirruslabs/android-sdk:34    #↳ Docker image with full Android SDK & NDK pre‑installed.
+  variables:
+    ANDROID_HOME: /opt/android-sdk-linux
+    # Build all ABIs and generate both APKs and a release AAB.
+    ARGS: "--ci --split-per-abi --apk --aab"
+  before_script:
+    # Enable PNPM via Corepack and Rust mobile targets.
+    - corepack enable && corepack prepare pnpm@${PNPM_VERSION:-8} --activate
+    - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+    # Accept Android SDK licences (non‑interactive).
+    - yes | sdkmanager --licenses
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm tauri android build $ARGS
+  artifacts:
+    paths:
+      - src-tauri/gen/android/app/build/outputs
+    expire_in: 1 week
+
+build_tauri_android:
+  extends: .build_android_template
+  stage: build
+  tags: [linux]
