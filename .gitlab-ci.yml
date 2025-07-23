@@ -86,7 +86,6 @@ unit_tests:
 build_tauri_linux:
   extends: .build_template
   image: ubuntu:22.04
-  tags: [linux]
   variables:
     ARGS: ""
   script:
@@ -123,4 +122,3 @@ build_tauri_linux:
 build_tauri_android:
   extends: .build_android_template
   stage: build
-  tags: [linux]
