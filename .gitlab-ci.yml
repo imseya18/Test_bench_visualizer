@@ -93,12 +93,10 @@ build_tauri_linux:
 #   Android build (APK + AAB)
 # ----------------------------------
 .build_android_template:
-  extends: .build_template
   image: ghcr.io/cirruslabs/android-sdk:34    # docker image with android sdk & ndk pre‑installed.
   variables:
     ANDROID_HOME: /opt/android-sdk-linux
     
-    ARGS: "--ci --split-per-abi --apk --aab"
   before_script:
     # === Install Node.js & PNPM ===
     - apt-get update -y && apt-get install -y curl ca-certificates gnupg
@@ -128,10 +126,16 @@ build_tauri_linux:
       password=$KEYSTORE_PASS
       storeFile=${CI_PROJECT_DIR}/upload-keystore.jks
       EOF
-  script:
-    - pnpm install --frozen-lockfile
-    - pnpm tauri android build $ARGS
   artifacts:
     paths:
       - src-tauri/gen/android/app/build/outputs
     expire_in: 1 week
+
+
+build_tauri_android:
+  extends: .build_android_template
+  stage: build
+  ARGS: "--ci --split-per-abi --apk --aab"
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm tauri android build $ARGS
