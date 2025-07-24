@@ -1,19 +1,12 @@
-# .gitlab-ci.yml – Equivalent of GitHub Actions “Build-on-all-OS” workflow for a Tauri project
-#
-# Runners required:
-#   • Shared Linux Docker runner (image ubuntu:22.04)
-#   • Self‑hosted or GitLab‑hosted runners tagged “windows” and “macos” for the corresponding jobs
-#
-# Adjust runner tags, Node/Rust/PNPM versions and any secret variables to suit your GitLab instance.
 
 stages:
   - test
   - build
 
 variables:
-  NODE_VERSION: "20"          # LTS/* in GitHub Actions
+  NODE_VERSION: "20"          
   PNPM_VERSION: "latest"
-  GIT_DEPTH: "0"             # keep full history (useful for changelogs)
+  GIT_DEPTH: "0"             
 
 # ----------------------------------
 #   Unit tests (Linux Docker)
@@ -22,8 +15,8 @@ unit_tests:
   stage: test
   image: node:${NODE_VERSION}
   rules:
-    # Run when the same paths as the GitHub workflow are modified,
-    # or on Merge Requests against main / direct pushes to main.
+    
+    
     - changes:
         - src/**/*
         - src-tauri/**/*
@@ -53,6 +46,7 @@ unit_tests:
 #   Build template (shared steps)
 # ----------------------------------
 .build_template:
+  image: node:${NODE_VERSION}
   stage: build
   needs: ["unit_tests"]
   before_script:
@@ -84,13 +78,12 @@ unit_tests:
 # ----------------------------------
 build_tauri_linux:
   extends: .build_template
-  image: ubuntu:22.04
   variables:
     ARGS: ""
   script:
-    # System dependencies for WebKitGTK (Tauri)
+    
     - apt-get update
-    - apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+    - apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev xdg-utils
     - pnpm install --frozen-lockfile
     - pnpm tauri build ${ARGS}
 
@@ -101,10 +94,10 @@ build_tauri_linux:
 # ----------------------------------
 .build_android_template:
   extends: .build_template
-  image: ghcr.io/cirruslabs/android-sdk:34    # Docker image with Android SDK & NDK pre‑installed.
+  image: ghcr.io/cirruslabs/android-sdk:34    # docker image with android sdk & ndk pre‑installed.
   variables:
     ANDROID_HOME: /opt/android-sdk-linux
-    # Build every ABI and generate both APK and release AAB.
+    
     ARGS: "--ci --split-per-abi --apk --aab"
   before_script:
     # === Install Node.js & PNPM ===
@@ -121,10 +114,20 @@ build_tauri_linux:
     # === Mobile targets for Rust ===
     - rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
 
-    # === Update PATH & accept Android licences ===
+    # === Update PATHS ===
     - export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
-    - yes | sdkmanager --licenses
-
+      
+    - sdkmanager "platforms;android-34" "build-tools;35.0.0" "ndk;28.2.13676358"
+    - export NDK_VERSION=$(ls $ANDROID_HOME/ndk | sort -V | tail -n1)
+    - export NDK_HOME="$ANDROID_HOME/ndk/$NDK_VERSION"
+    - echo "NDK_HOME = $NDK_HOME"
+    - echo "$KEYSTORE_B64" | base64 -d > upload-keystore.jks
+    - | 
+      cat > src-tauri/gen/android/keystore.properties <<EOF
+      keyAlias=$KEY_ALIAS
+      password=$KEYSTORE_PASS
+      storeFile=${CI_PROJECT_DIR}/upload-keystore.jks
+      EOF
   script:
     - pnpm install --frozen-lockfile
     - pnpm tauri android build $ARGS
@@ -132,9 +135,3 @@ build_tauri_linux:
     paths:
       - src-tauri/gen/android/app/build/outputs
     expire_in: 1 week
-
-
-build_tauri_android:
-  extends: .build_android_template
-  stage: build
-
