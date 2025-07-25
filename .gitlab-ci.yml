@@ -135,7 +135,6 @@ build_tauri_linux:
 build_tauri_android:
   extends: .build_android_template
   stage: build
-  ARGS: "--ci --split-per-abi --apk --aab"
   script:
     - pnpm install --frozen-lockfile
-    - pnpm tauri android build $ARGS
+    - pnpm tauri android build 
