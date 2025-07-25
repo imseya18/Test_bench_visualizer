@@ -27,20 +27,21 @@ Pipeline information (including **job results** and **test reports**) is retriev
 1. ### Prerequisites
     - install Node.js (v18+) and pnpm or npm
     - install Rust toolchain (stable). Ensure that `cargo` is available
-    - On Linux, install the system packages required by Tauri as described in the Tauri documentation.
+    - Follow the [Tauri Prerequisites](https://tauri.app/start/prerequisites/) and install all necessary dependencies for your OS.
     - Obtain a GitLab personal access token with permission to read pipelines. The application uses this token to query the GitLab API.
 2. ### Clone and install
     ```
-    git clone https://github.com/imseya18/Test_bench_visualizer.git
-    cd Test_bench_visualizer
+    git clone git@gitlab.com:witekio/rnd/b0000-witekio-welma/test-bench-vizualizer/vizualizer-app.git
+    cd vizualizer-app 
     pnpm install
 
     # or with npm
     # npm install
 3. ### Run in development
     #### ON WITEKIO NETWORK
-    - Refere to this confluence page: [Config Witekio Network](https://adeneo-embedded.atlassian.net/wiki/spaces/BIST22/pages/4722491527/Mobile+Config+Witekio+Network)
-    #### NO NETWORK RESTRICTION
+    - You **must** set up a `SSH Tunneling` Refere to this confluence page: [Config Witekio Network](https://adeneo-embedded.atlassian.net/wiki/spaces/BIST22/pages/4722491527/Mobile+Config+Witekio+Network#MOBILE-APP)
+    #### NO NETWORK RESTRICTION OR DESKTOP ONLY USAGE:
+    - Refere to this confluence page: [Classic config](https://adeneo-embedded.atlassian.net/wiki/spaces/BIST22/pages/4722491527/Mobile+Config+Witekio+Network#CLASSIC-CONFIG)
     ##### DESKTOP
         
     ```
