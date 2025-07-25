@@ -67,4 +67,3 @@ Pipeline information (including **job results** and **test reports**) is retriev
 - **Create a board** from the dashboard. You can save it to preserve its state between sessions. 
 - **Select card types** within the board. The card will then display the latest pipeline informations based on selected branch.
 - **Monitor LED strip**. in the Settings page, scan for BLE LED strips. Only BLE device with our [custom services](https://gitlab.com/witekio/rnd/b0000-witekio-welma/test-bench-vizualizer/esp32-ble-server) will show, select one and connect.
-
