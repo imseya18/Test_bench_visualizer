@@ -46,11 +46,11 @@ export function Sidebar() {
         </Button>
       </Tooltip>
 
-      <Tooltip content='Analytics' placement='right'>
+      {/* <Tooltip content='Analytics' placement='right'>
         <Button isIconOnly variant='light' className='mb-4' aria-label='Analytics'>
           <Icon icon='lucide:bar-chart-2' width={24} />
         </Button>
-      </Tooltip>
+      </Tooltip> */}
 
       <Tooltip content='Settings' placement='right'>
         <Button
@@ -97,7 +97,6 @@ export function Sidebar() {
           color='success'
           className='mb-4'
           aria-label='Start All Tests'
-          onPress={() => navigate('bluetooth')}
         >
           <Icon icon='lucide:play' width={24} />
         </Button>
