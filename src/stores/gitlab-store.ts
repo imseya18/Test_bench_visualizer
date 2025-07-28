@@ -59,7 +59,7 @@ export const useGitLabStore = create<GitLabSlice>()(
       try {
         const store_path = await getStorePath();
         const store = await load(store_path, { autoSave: true });
-        const result = await invoke<ByCardsResponse>('test_api_call', {
+        const result = await invoke<ByCardsResponse>('get_gitlab_cards_data', {
           branch_name: branchName,
           since_days: sinceDays,
         });

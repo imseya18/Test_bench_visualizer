@@ -39,7 +39,7 @@ fn get_api_key(state: tauri::State<'_, RwLock<AppState>>) -> Result<String, Stri
 }
 
 #[tauri::command(rename_all = "snake_case")]
-async fn test_api_call(
+async fn get_gitlab_cards_data(
     branch_name: String,
     since_days: u64,
     state: tauri::State<'_, RwLock<AppState>>,
@@ -83,7 +83,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             set_api_key,
             get_api_key,
-            test_api_call
+            get_gitlab_cards_data
         ])
         .setup(|app| {
             let resource_path = app
