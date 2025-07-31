@@ -1,4 +1,5 @@
 import '../App.css';
+import { useMemo } from 'react';
 import { DeviceCard } from './device-card';
 import { BoardProperties, useJsonStore } from '../stores/json-store';
 import { useEffect, useState } from 'react';
@@ -41,6 +42,18 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
+  //* Change the array order to match the physical led strip positioning on the Testbench [0,1,2,3,4,9,8,7,6,5,10,11,12,13,14]
+  const serpentineOrderedCards = useMemo(() => {
+    const sortedCards = Object.values(cards).sort((a, b) => b.onBoardPosition - a.onBoardPosition);
+    const result = [];
+    for (let i = 0; i < sortedCards.length; i += columns) {
+      const row = sortedCards.slice(i, i + columns);
+      const isReverse = Math.floor(i / columns) % 2 === 1;
+      result.push(...(isReverse ? row.reverse() : row));
+    }
+    result.map((card, index) => console.log('index =' + index + 'cards =' + card.onBoardPosition));
+    return result;
+  }, [cards]);
 
   useEffect(() => {
     // to prevent reRender when ReactMode.Strict enabled
@@ -124,16 +137,10 @@ export function DeviceGrid({ rows, columns }: DeviceGridProperties) {
           </Modal>
         </div>
       )}
-      <div className={`grid gap-4 p-3 flex-1 min-h-0 grid-cols-5 [grid-auto-rows:1fr]`}>
-        {Object.values(cards)
-          .sort((a, b) => b.onBoardPosition - a.onBoardPosition)
-          .map((card) => (
-            <DeviceCard
-              key={card.id}
-              id={card.id}
-              onBoardPosition={card.onBoardPosition}
-            ></DeviceCard>
-          ))}
+      <div className='grid gap-4 p-3 flex-1 min-h-0 grid-cols-5 [grid-auto-rows:1fr]'>
+        {serpentineOrderedCards.map((card) => (
+          <DeviceCard key={card.id} id={card.id} onBoardPosition={card.onBoardPosition} />
+        ))}
       </div>
     </div>
   );
