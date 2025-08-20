@@ -8,10 +8,6 @@ The app allows the user to create boards made of multiple cards. Each card repre
 Pipeline information (including **job results** and **test reports**) is retrieved from `GitLab` via **asynchronous Rust services** and is cached locally using **Tauri’s plugin‑store**.
 <br>The front‑end visualises pipeline status using coloured progress bars, lists of jobs and history views, and sends status‑dependent colours to an addressable LED strip over `BLE` to give an at‑a‑glance status indication.
 
-## Documentation
-
-link to the technical doc: [Doc](https://adeneo-embedded.atlassian.net/wiki/spaces/BIST22/pages/4813488164/App+Documentation)
-
 ## Technologies and frameworks
 
 | Layer        | Technology          | Notes                                                                                                                                                                                                                    |
@@ -45,14 +41,6 @@ link to the technical doc: [Doc](https://adeneo-embedded.atlassian.net/wiki/spac
 
 3. ### Run in development
 
-   #### ON WITEKIO NETWORK
-
-   - You **must** set up a `SSH Tunneling` Refere to this confluence page: [Config Witekio Network](https://adeneo-embedded.atlassian.net/wiki/spaces/BIST22/pages/4722491527/Mobile+Config+Witekio+Network#MOBILE-APP)
-
-   #### NO NETWORK RESTRICTION OR DESKTOP ONLY USAGE:
-
-   - Refere to this confluence page: [Classic config](https://adeneo-embedded.atlassian.net/wiki/spaces/BIST22/pages/4722491527/Mobile+Config+Witekio+Network#CLASSIC-CONFIG)
-
    ##### DESKTOP
 
    ```
@@ -82,4 +70,4 @@ link to the technical doc: [Doc](https://adeneo-embedded.atlassian.net/wiki/spac
 - **Launch the app** using `pnpm tauri dev` and **provide your GitLab API key** in the Settings page.
 - **Create a board** from the dashboard. You can save it to preserve its state between sessions.
 - **Select card types** within the board. The card will then display the latest pipeline informations based on selected branch.
-- **Monitor LED strip**. in the Settings page, scan for BLE LED strips. Only BLE device with our [custom services](https://gitlab.com/witekio/rnd/b0000-witekio-welma/test-bench-vizualizer/esp32-ble-server) will show, select one and connect.
+- **Monitor LED strip**. in the Settings page, scan for BLE LED strips. Only BLE device with our [custom services](https://github.com/imseya18/ESP32_BLE_Server) will show, select one and connect.
